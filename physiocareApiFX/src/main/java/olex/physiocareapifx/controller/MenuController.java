@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import org.kordamp.bootstrapfx.BootstrapFX;
 
 /**
  * Controller for the main menu view.
@@ -21,6 +22,7 @@ public class MenuController {
      */
     @FXML
     public void initialize() {
+        btnPatients.getStyleClass().setAll("btn","btn-danger");
         btnPatients.setOnAction(e -> openView("patient-view.fxml"));
         btnPhysios.setOnAction(e -> openView("physio-view.fxml"));
     }
@@ -34,7 +36,9 @@ public class MenuController {
         try {
             Stage stage = (Stage) btnPatients.getScene().getWindow();
             Parent root = FXMLLoader.load(getClass().getResource("/olex/physiocareapifx/" + fxml));
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+            stage.setScene(scene);
         } catch (Exception e) {
             e.printStackTrace();
         }

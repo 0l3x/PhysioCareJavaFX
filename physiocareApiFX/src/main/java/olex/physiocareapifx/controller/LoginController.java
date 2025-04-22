@@ -13,6 +13,7 @@ import olex.physiocareapifx.utils.ServiceUtils;
 import olex.physiocareapifx.utils.TokenManager;
 import com.google.gson.Gson;
 import olex.physiocareapifx.model.AuthResponse;
+import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;
 
@@ -69,6 +70,8 @@ public class LoginController {
     private void loadMenuView() throws IOException {
         Stage stage = (Stage) loginBtn.getScene().getWindow();
         Parent root = FXMLLoader.load(getClass().getResource("/olex/physiocareapifx/menu.fxml"));
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+        stage.setScene(scene);
     }
 }
