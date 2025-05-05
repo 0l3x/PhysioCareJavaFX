@@ -9,16 +9,15 @@ import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import jdk.jshell.execution.Util;
 import olex.physiocareapifx.model.LoginRequest;
-import olex.physiocareapifx.utils.MessageUtils;
-import olex.physiocareapifx.utils.SceneLoader;
-import olex.physiocareapifx.utils.ServiceUtils;
-import olex.physiocareapifx.utils.TokenManager;
+import olex.physiocareapifx.utils.*;
 import com.google.gson.Gson;
 import olex.physiocareapifx.model.AuthResponse;
 import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Controller for the login view.
@@ -55,6 +54,15 @@ public class LoginController {
                 System.out.println("Login Successful");
                 System.out.println("Token: " + response.getToken());
                 TokenManager.setToken(response.getToken());
+
+                if(Objects.equals(response.getRol(), "physio")){
+                    Utils.isPhysio = true;
+                    Utils.userId = response.getId();
+                }else{
+                    Utils.isPhysio = false;
+                }
+                System.out.println(Utils.userId);
+                System.out.println(Utils.isPhysio);
                 SceneLoader.loadScreen("menu.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
                 //loadMenuView();
             } else {

@@ -1,12 +1,16 @@
 package olex.physiocareapifx.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import olex.physiocareapifx.utils.SceneLoader;
 import org.kordamp.bootstrapfx.BootstrapFX;
+
+import java.io.IOException;
 
 /**
  * Controller for the main menu view.
@@ -14,6 +18,7 @@ import org.kordamp.bootstrapfx.BootstrapFX;
  */
 public class MenuController {
 
+    public Button btnAppointments;
     @FXML private Button btnPatients;
     @FXML private Button btnPhysios;
 
@@ -23,24 +28,26 @@ public class MenuController {
     @FXML
     public void initialize() {
         btnPatients.getStyleClass().setAll("btn","btn-danger");
-        btnPatients.setOnAction(e -> openView("patient-view.fxml"));
-        btnPhysios.setOnAction(e -> openView("physio-view.fxml"));
-    }
-
-    /**
-     * Loads the specified FXML view and replaces the current scene.
-     *
-     * @param fxml The name of the FXML file to load (e.g., "patient-view.fxml").
-     */
-    private void openView(String fxml) {
-        try {
-            Stage stage = (Stage) btnPatients.getScene().getWindow();
-            Parent root = FXMLLoader.load(getClass().getResource("/olex/physiocareapifx/" + fxml));
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
-            stage.setScene(scene);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        btnPatients.setOnAction(actionEvent -> {
+            try {
+                SceneLoader.loadScreen("patient-view.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        btnPhysios.setOnAction(actionEvent -> {
+            try {
+                SceneLoader.loadScreen("physio-view.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        btnAppointments.setOnAction(actionEvent -> {
+            try {
+                SceneLoader.loadScreen("appointment-view.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
