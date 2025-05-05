@@ -1,6 +1,8 @@
 package olex.physiocareapifx.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
@@ -9,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import olex.physiocareapifx.model.LoginRequest;
 import olex.physiocareapifx.utils.MessageUtils;
+import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
 import olex.physiocareapifx.utils.TokenManager;
 import com.google.gson.Gson;
@@ -32,14 +35,14 @@ public class LoginController {
      */
     @FXML
     public void initialize() {
-        loginBtn.setOnAction(e -> login());
+        loginBtn.setOnAction(this::login);
     }
 
     /**
      * Handles the login process: sends credentials to the backend and processes the response.
      * On success, stores the token and loads the menu view.
      */
-    private void login() {
+    private void login(ActionEvent actionEvent) {
         String user = usernameField.getText();
         String pass = passwordField.getText();
 
@@ -52,7 +55,8 @@ public class LoginController {
                 System.out.println("Login Successful");
                 System.out.println("Token: " + response.getToken());
                 TokenManager.setToken(response.getToken());
-                loadMenuView();
+                SceneLoader.loadScreen("menu.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
+                //loadMenuView();
             } else {
                 MessageUtils.showError("Login failed", "Incorrect username or password");
             }

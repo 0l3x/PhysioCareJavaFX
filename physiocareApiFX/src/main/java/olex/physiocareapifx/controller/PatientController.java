@@ -3,6 +3,7 @@ package olex.physiocareapifx.controller;
 import com.google.gson.Gson;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,6 +15,7 @@ import olex.physiocareapifx.model.PatientResponse;
 import olex.physiocareapifx.services.PatientService;
 import olex.physiocareapifx.services.PatientService.Method;
 import olex.physiocareapifx.utils.MessageUtils;
+import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -64,7 +66,13 @@ public class PatientController {
         addBtn.setOnAction(e -> addPatient());
         editBtn.setOnAction(e -> updatePatient());
         deleteBtn.setOnAction(e -> deletePatient());
-        exitBtn.setOnAction(e -> goBackToMenu());
+        exitBtn.setOnAction(actionEvent -> {
+            try {
+                SceneLoader.loadScreen("menu.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         tableViewPatient.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) fillFieldsFromPatient(newVal);
