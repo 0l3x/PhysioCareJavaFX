@@ -144,9 +144,11 @@ public class ServiceUtils {
                     result.add(line);
                 }
                 System.out.println("Response code: " + responseCode);
+                System.out.println("Response: " + result.toString());
             }
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             if (bufInput != null) {
                 try {

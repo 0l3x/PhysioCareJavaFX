@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
+import static olex.physiocareapifx.utils.Utils.userId;
+
 public class AppointmentController implements Initializable {
     @FXML
     public Button exitBtn;
@@ -33,8 +35,6 @@ public class AppointmentController implements Initializable {
     public TextField diagnosisField;
     @FXML
     public TextField observationsField;
-    @FXML
-    public TextField physioField;
     @FXML
     public TextField treatmentField;
     @FXML
@@ -104,10 +104,10 @@ public class AppointmentController implements Initializable {
     public void getAppointment(){
         tableViewAppointment.getItems().clear();
         String url ="";
-        System.out.println(Utils.userId);
+        System.out.println(userId);
         System.out.println(Utils.isPhysio);
         if(Utils.isPhysio){
-           url = ServiceUtils.SERVER + "/records/appointments/physio/" + Utils.userId;
+           url = ServiceUtils.SERVER + "/records/appointments/physio/" + userId;
        }else{
            url = ServiceUtils.SERVER  + "/records/appointmentAdmin";
        }
@@ -138,8 +138,7 @@ public class AppointmentController implements Initializable {
                 if (response.isOk()) {
                    Platform.runLater(() ->{
                        for(int i = 0; i < response.getResultado().size(); i++) {
-                           cmbPhysios.getItems().add(response.getResultado().get(i).getId() + "-" +
-                                   response.getResultado().get(i).getName());
+                           cmbPhysios.getItems().add(response.getResultado().get(i).getId());
                        }});
                 } else {
                     MessageUtils.showError("Error", "No se pudo cargar la lista de fisioterapeutas");
@@ -172,14 +171,14 @@ public class AppointmentController implements Initializable {
         String date = datePicker.getValue().toString();
         String diagnosis = diagnosisField.getText();
         String observations = observationsField.getText();
-        String physio = physioField.getText();
+        String physio = cmbPhysios.getSelectionModel().getSelectedItem();
         String treatment = treatmentField.getText();
         String status = cmbStatus.getSelectionModel().getSelectedItem();
-        Appointment appointment = new Appointment(date,diagnosis,observations,physio,treatment,status);
+        Appointment appointment = new Appointment(date,physio,diagnosis,treatment,observations,status);
         String url = ServiceUtils.SERVER + "/records/appointments/" + recordId;
         String jsonRequest = gson.toJson(appointment);
         ServiceUtils.getResponseAsync(url,jsonRequest,"POST")
-                .thenApply(json->gson.fromJson(json, AppointmentListResponse.class))
+                .thenApply(json->gson.fromJson(json, RecordResponse.class))
                 .thenAccept(response->{
                     if(response.isOk()){
                         Platform.runLater(()->{
@@ -204,10 +203,63 @@ public class AppointmentController implements Initializable {
     public void updateAppointment(){
         addBtn.setDisable(false);
         cmbRecords.setDisable(false);
+        String recordId = cmbRecords.getSelectionModel().getSelectedItem();
+        String id = tableViewAppointment.getSelectionModel().getSelectedItem().getId();
+        String date = datePicker.getValue().toString();
+        String diagnosis = diagnosisField.getText();
+        String observations = observationsField.getText();
+        String physio = cmbPhysios.getSelectionModel().getSelectedItem();
+        String treatment = treatmentField.getText();
+        String status = cmbStatus.getSelectionModel().getSelectedItem();
+        Appointment appointment = new Appointment(id,date,physio,diagnosis,treatment,observations,status);
+        String url = ServiceUtils.SERVER + "/records/appointments/" + id;
+        String jsonRequest = gson.toJson(appointment);
+        ServiceUtils.getResponseAsync(url,jsonRequest,"PUT")
+                .thenApply(json->gson.fromJson(json, RecordResponse.class))
+                .thenAccept(response->{
+                    if(response.isOk()){
+                        Platform.runLater(()->{
+                            MessageUtils.showMessage("Success","Appointment updated");
+                            getAppointment();
+                            cleanForm();
+                        });
+                    }else{
+                        Platform.runLater(()->{
+                            MessageUtils.showError("Error",response.getError());
+                        });
+                    }
+                }).exceptionally(ex->{
+                    ex.printStackTrace();
+                    Platform.runLater(()->{
+                        MessageUtils.showError("Error","Failed to post appointment" );
+                    });
+                    return null;
+                });
     }
 
     public void deleteAppointment(){
-
+        String url = ServiceUtils.SERVER + "/records/appointments/" + tableViewAppointment.getSelectionModel().getSelectedItem().getId();
+        ServiceUtils.getResponseAsync(url,null,"DELETE")
+                .thenApply(json->gson.fromJson(json, RecordResponse.class))
+                .thenAccept(response->{
+                    if(response.isOk()){
+                        Platform.runLater(()->{
+                            MessageUtils.showMessage("Success","Appointment deleted");
+                            getAppointment();
+                            cleanForm();
+                        });
+                    }else{
+                        Platform.runLater(()->{
+                            MessageUtils.showError("Error",response.getError());
+                        });
+                    }
+                }).exceptionally(ex->{
+                    ex.printStackTrace();
+                    Platform.runLater(()->{
+                        MessageUtils.showError("Error","Failed to post appointment" );
+                    });
+                    return null;
+                });
     }
 
     public void fillFieldsFromAppointment(Appointment appointment){
@@ -216,7 +268,7 @@ public class AppointmentController implements Initializable {
         datePicker.setValue(parsedDate);
         diagnosisField.setText(appointment.getDiagnosis());
         observationsField.setText(appointment.getObservations());
-        physioField.setText(appointment.getPhysio());
+        cmbPhysios.getSelectionModel().select(appointment.getPhysio());
         treatmentField.setText(appointment.getTreatment());
         cmbStatus.getSelectionModel().select(appointment.getStatus());
     }
@@ -225,7 +277,7 @@ public class AppointmentController implements Initializable {
         cmbRecords.setDisable(false);
         datePicker.setValue(null);
         diagnosisField.clear();
-        physioField.clear();
+        cmbPhysios.getSelectionModel().select(userId);
         treatmentField.clear();
         tableViewAppointment.getSelectionModel().clearSelection();
         observationsField.clear();
