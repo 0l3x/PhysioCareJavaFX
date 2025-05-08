@@ -10,9 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import olex.physiocareapifx.model.Appointment;
-import olex.physiocareapifx.model.AppointmentListResponse;
-import olex.physiocareapifx.model.PatientResponse;
+import olex.physiocareapifx.model.*;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
@@ -20,6 +18,8 @@ import olex.physiocareapifx.utils.Utils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class AppointmentController implements Initializable {
@@ -60,6 +60,9 @@ public class AppointmentController implements Initializable {
     public TableColumn<Appointment,String> colStatus;
     public Gson gson = new Gson();
     public ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+    public ComboBox<String> cmbRecords;
+    public Button btnClean;
+    public ComboBox<String> cmbPhysios;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -71,17 +74,35 @@ public class AppointmentController implements Initializable {
             }
         });
         cmbStatus.getItems().addAll("pending", "completed", "cancelled");
+        cmbStatus.getSelectionModel().select("pending");
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colDiganosis.setCellValueFactory(new PropertyValueFactory<>("diagnosis"));
         colObservations.setCellValueFactory(new PropertyValueFactory<>("observations"));
         colPhysio.setCellValueFactory(new PropertyValueFactory<>("physio"));
         colTreatment.setCellValueFactory(new PropertyValueFactory<>("treatment"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-
+        getRecord();
         getAppointment();
+        loadPhysios();
+
+        addBtn.setOnAction(e->addAppointment());
+        editBtn.setOnAction(e->updateAppointment());
+        deleteBtn.setOnAction(e->deleteAppointment());
+        btnClean.setOnAction(e->{
+            cleanForm();
+        });
+
+        tableViewAppointment.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                fillFieldsFromAppointment(newVal);
+                addBtn.setDisable(true);
+                cmbRecords.setDisable(true);
+            }
+        });
     }
 
     public void getAppointment(){
+        tableViewAppointment.getItems().clear();
         String url ="";
         System.out.println(Utils.userId);
         System.out.println(Utils.isPhysio);
@@ -109,25 +130,19 @@ public class AppointmentController implements Initializable {
                 });
     }
 
-    private void loadAppointments() {
+    private void loadPhysios() {
         new Thread(() -> {
             try {
-                String url="";
-                System.out.println(Utils.userId);
-                System.out.println(Utils.isPhysio);
-                if(Utils.isPhysio){
-                    url = ServiceUtils.SERVER + "/appointments/physio/" + Utils.userId;
-                }else{
-                    url = ServiceUtils.SERVER  + "/appointmentAdmin";
-                }
-                String json = ServiceUtils.getResponse(url, null, "GET");
-                AppointmentListResponse response = gson.fromJson(json, AppointmentListResponse.class);
+                String json = ServiceUtils.getResponse(ServiceUtils.API_URL + "/physios", null, "GET");
+                PhysioResponse response = gson.fromJson(json, PhysioResponse.class);
                 if (response.isOk()) {
-                    javafx.application.Platform.runLater(() ->
-                            tableViewAppointment.getItems().setAll(response.getAppointments())
-                    );
+                   Platform.runLater(() ->{
+                       for(int i = 0; i < response.getResultado().size(); i++) {
+                           cmbPhysios.getItems().add(response.getResultado().get(i).getId() + "-" +
+                                   response.getResultado().get(i).getName());
+                       }});
                 } else {
-                    MessageUtils.showError("Error", "No se pudo cargar la lista de pacientes");
+                    MessageUtils.showError("Error", "No se pudo cargar la lista de fisioterapeutas");
                 }
             } catch (Exception e) {
                 MessageUtils.showError("Error", e.getMessage());
@@ -135,7 +150,87 @@ public class AppointmentController implements Initializable {
         }).start();
     }
 
+    public void getRecord(){
+        String url = ServiceUtils.SERVER + "/records";
+        ServiceUtils.getResponseAsync(url,null,"GET")
+                .thenApply(json-> gson.fromJson(json, RecordListResponse.class))
+                .thenAccept(response->{
+                    for(int i = 0; i < response.getRecords().size(); i++){
+                        cmbRecords.getItems().add(response.getRecords().get(i).getId());
+                    }
+                }).exceptionally(ex->{
+                    ex.printStackTrace();
+                    Platform.runLater(()->{
+                        MessageUtils.showError("Error","Failed to post patient");
+                    });
+                    return null;
+                });
+    }
 
+    public void addAppointment(){
+        String recordId = cmbRecords.getSelectionModel().getSelectedItem();
+        String date = datePicker.getValue().toString();
+        String diagnosis = diagnosisField.getText();
+        String observations = observationsField.getText();
+        String physio = physioField.getText();
+        String treatment = treatmentField.getText();
+        String status = cmbStatus.getSelectionModel().getSelectedItem();
+        Appointment appointment = new Appointment(date,diagnosis,observations,physio,treatment,status);
+        String url = ServiceUtils.SERVER + "/records/appointments/" + recordId;
+        String jsonRequest = gson.toJson(appointment);
+        ServiceUtils.getResponseAsync(url,jsonRequest,"POST")
+                .thenApply(json->gson.fromJson(json, AppointmentListResponse.class))
+                .thenAccept(response->{
+                    if(response.isOk()){
+                        Platform.runLater(()->{
+                            MessageUtils.showMessage("Success","Appointment added");
+                            getAppointment();
+                            cleanForm();
+                        });
+                    }else{
+                        Platform.runLater(()->{
+                            MessageUtils.showError("Error",response.getError());
+                        });
+                    }
+                }).exceptionally(ex->{
+                    ex.printStackTrace();
+                    Platform.runLater(()->{
+                        MessageUtils.showError("Error","Failed to post appointment" );
+                    });
+                    return null;
+                });
+    }
 
+    public void updateAppointment(){
+        addBtn.setDisable(false);
+        cmbRecords.setDisable(false);
+    }
+
+    public void deleteAppointment(){
+
+    }
+
+    public void fillFieldsFromAppointment(Appointment appointment){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        LocalDate parsedDate = LocalDate.parse(appointment.getDate(), formatter);
+        datePicker.setValue(parsedDate);
+        diagnosisField.setText(appointment.getDiagnosis());
+        observationsField.setText(appointment.getObservations());
+        physioField.setText(appointment.getPhysio());
+        treatmentField.setText(appointment.getTreatment());
+        cmbStatus.getSelectionModel().select(appointment.getStatus());
+    }
+    public void cleanForm(){
+        addBtn.setDisable(false);
+        cmbRecords.setDisable(false);
+        datePicker.setValue(null);
+        diagnosisField.clear();
+        physioField.clear();
+        treatmentField.clear();
+        tableViewAppointment.getSelectionModel().clearSelection();
+        observationsField.clear();
+        cmbStatus.getSelectionModel().select("pending");
+        cmbRecords.getSelectionModel().select(-1);
+    }
 }
 

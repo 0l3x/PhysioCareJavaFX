@@ -38,6 +38,12 @@
             </TableView>
             <VBox prefHeight="129.0" prefWidth="681.0" spacing="10.0">
                <children>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                     <children>
+                        <Label text="Record" />
+                        <ComboBox fx:id="cmbRecords" prefWidth="150.0" />
+                     </children>
+                  </HBox>
                   <HBox alignment="CENTER" prefHeight="0.0" prefWidth="681.0" spacing="20.0" VBox.vgrow="ALWAYS">
                      <children>
                         <Label text="Date" />
@@ -59,7 +65,7 @@
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                      <children>
                         <Label text="Physio" />
-                        <TextField fx:id="physioField" />
+                        <ComboBox fx:id="cmbPhysios" prefWidth="150.0" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
@@ -79,6 +85,7 @@
                         <Button fx:id="addBtn" mnemonicParsing="false" text="Add" />
                         <Button fx:id="editBtn" mnemonicParsing="false" text="Update" />
                         <Button fx:id="deleteBtn" mnemonicParsing="false" text="Delete" />
+                        <Button fx:id="btnClean" mnemonicParsing="false" text="Clean Form" />
                      </children>
                   </HBox>
                </children>

@@ -8,14 +8,14 @@ public class Appointment {
     @SerializedName("_id")
     private String id;
 
-    private Date date;
+    private String date;
     private String physio;
     private String diagnosis;
     private String treatment;
     private String observations;
     private String status;
 
-    public Appointment(Date date, String physio, String diagnosis, String treatment, String observations,String status) {
+    public Appointment(String date, String physio, String diagnosis, String treatment, String observations,String status) {
         this.date = date;
         this.physio = physio;
         this.diagnosis = diagnosis;
@@ -24,7 +24,7 @@ public class Appointment {
         this.status = status;
     }
 
-    public Appointment(String id, Date date, String physio, String diagnosis, String treatment, String observations,String status) {
+    public Appointment(String id, String date, String physio, String diagnosis, String treatment, String observations,String status) {
         this.id = id;
         this.date = date;
         this.physio = physio;
@@ -42,11 +42,11 @@ public class Appointment {
         this.id = id;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

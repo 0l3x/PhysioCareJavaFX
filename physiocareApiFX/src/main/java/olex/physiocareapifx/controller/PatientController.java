@@ -60,7 +60,6 @@ public class PatientController {
         colAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
         colInsurance.setCellValueFactory(new PropertyValueFactory<>("insuranceNumber"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
-
         loadPatients();
 
         addBtn.setOnAction(e -> addPatient());

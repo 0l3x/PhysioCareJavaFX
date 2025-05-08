@@ -16,7 +16,7 @@
                   <Font name="Bell MT" size="35.0" />
                </font>
             </Text>
-            <HBox prefHeight="60.0" prefWidth="601.0">
+            <HBox prefHeight="94.0" prefWidth="601.0">
                <children>
                   <Button fx:id="btnPatients" mnemonicParsing="false" prefHeight="111.0" prefWidth="218.0" text="Patients" />
                   <Button fx:id="btnPhysios" mnemonicParsing="false" prefHeight="111.0" prefWidth="218.0" text="Physios" />

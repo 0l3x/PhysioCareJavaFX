@@ -241,16 +241,4 @@ public class PhysiosController {
         tableViewPhysio.getSelectionModel().clearSelection();
     }
 
-    /**
-     * Navigates back to the main menu.
-     */
-    private void goBackToMenu() {
-        try {
-            Stage stage = (Stage) exitBtn.getScene().getWindow();
-            Parent root = FXMLLoader.load(getClass().getResource("/olex/physiocareapifx/menu.fxml"));
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            MessageUtils.showError("Error", "No se pudo volver al menú.");
-        }
-    }
 }
