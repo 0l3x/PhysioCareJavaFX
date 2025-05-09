@@ -2,16 +2,13 @@ package olex.physiocareapifx.controller;
 
 import com.google.gson.Gson;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Physio;
-import olex.physiocareapifx.model.PhysioResponse;
+import olex.physiocareapifx.model.PhysioListResponse;
 import olex.physiocareapifx.services.PhysioService;
 import olex.physiocareapifx.services.PhysioService.Method;
 import olex.physiocareapifx.utils.MessageUtils;
@@ -84,10 +81,10 @@ public class PhysiosController {
         new Thread(() -> {
             try {
                 String json = ServiceUtils.getResponse(ServiceUtils.API_URL + "/physios", null, "GET");
-                PhysioResponse response = gson.fromJson(json, PhysioResponse.class);
+                PhysioListResponse response = gson.fromJson(json, PhysioListResponse.class);
                 if (response.isOk()) {
                     javafx.application.Platform.runLater(() ->
-                            tableViewPhysio.getItems().setAll(response.getResultado())
+                            tableViewPhysio.getItems().setAll(response.getPhysios())
                     );
                 } else {
                     MessageUtils.showError("Error", "No se pudo cargar la lista de fisioterapeutas");

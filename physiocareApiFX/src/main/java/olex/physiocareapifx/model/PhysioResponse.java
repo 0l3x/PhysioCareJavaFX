@@ -2,10 +2,10 @@ package olex.physiocareapifx.model;
 
 import java.util.List;
 
-public class PhysioResponse extends BaseResponse {
-    private List<Physio> resultado;
+public class PhysioResponse extends BaseResponse  {
+     private Physio resultado;
 
-    public List<Physio> getResultado() {
+    public Physio getPhysio() {
         return resultado;
     }
 }

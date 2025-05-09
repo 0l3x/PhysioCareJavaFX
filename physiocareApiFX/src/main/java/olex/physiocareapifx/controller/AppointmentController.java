@@ -6,11 +6,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import olex.physiocareapifx.model.*;
+import olex.physiocareapifx.model.Record;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
@@ -21,6 +26,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 
 import static olex.physiocareapifx.utils.Utils.userId;
 
@@ -63,6 +69,10 @@ public class AppointmentController implements Initializable {
     public ComboBox<String> cmbRecords;
     public Button btnClean;
     public ComboBox<String> cmbPhysios;
+    public Button btnPast;
+    public Button btnFuture;
+    public Button btnComplete;
+    public Button btnReset;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -81,16 +91,100 @@ public class AppointmentController implements Initializable {
         colPhysio.setCellValueFactory(new PropertyValueFactory<>("physio"));
         colTreatment.setCellValueFactory(new PropertyValueFactory<>("treatment"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        TableColumn<Appointment, Void> colAcciones = createDeleteColumn(appointments);
+        colAcciones.setPrefWidth(100);
+        tableViewAppointment.getColumns().add(colAcciones);
         getRecord();
         getAppointment();
         loadPhysios();
 
         addBtn.setOnAction(e->addAppointment());
         editBtn.setOnAction(e->updateAppointment());
-        deleteBtn.setOnAction(e->deleteAppointment());
         btnClean.setOnAction(e->{
             cleanForm();
         });
+        ContextMenu contextMenu = new ContextMenu();
+
+        cmbRecords.setOnMouseEntered(e->{
+            if(cmbRecords.getSelectionModel().getSelectedItem() == null){
+                System.out.println("No hay valor seleccionado, no muestro menú");
+                contextMenu.getItems().clear();
+                contextMenu.hide();
+                return;
+            }
+           CompletableFuture<Record> record = getRecordById();
+           if(record != null){
+               try{
+                   if (record.get().getPatient() != null) {
+                       System.out.println("No hay valor seleccionado, no muestro menú");
+                       contextMenu.getItems().clear();
+                       contextMenu.getItems().addAll(
+                               new MenuItem("Record ID: " + record.get().getId()),
+                               new MenuItem("Patient: " + record.get().getPatient()),
+                               new MenuItem("Medical Record: " + record.get().getMedicalRecord())
+                       );
+                       contextMenu.show(cmbRecords, Side.BOTTOM, 0,0);
+
+                   }
+               }catch (Exception ex){
+                   MessageUtils.showError("Error","Failed to get record");
+               }
+           }
+
+        });
+
+        cmbRecords.setOnMouseExited(e->{
+                contextMenu.hide();
+        });
+
+        cmbPhysios.setOnMouseEntered(e->{
+            if(cmbPhysios.getSelectionModel().getSelectedItem() == null){
+                System.out.println("No hay valor seleccionado, no muestro menú");
+                contextMenu.getItems().clear();
+                contextMenu.hide();
+                return;
+            }
+            CompletableFuture<Physio> physio = getPhysioById();
+            if(physio != null){
+                try{
+                    if (physio.get().getName() != null) {
+                        System.out.println("No hay valor seleccionado, no muestro menú");
+                        contextMenu.getItems().clear();
+                        contextMenu.getItems().addAll(
+                                new MenuItem("Physio ID: " + physio.get().getId()),
+                                new MenuItem("Name: " + physio.get().getName()),
+                                new MenuItem("Email: " + physio.get().getEmail()),
+                                new MenuItem("LicenseNumber"+ physio.get().getLicenseNumber()),
+                                new MenuItem("Specialty: " + physio.get().getSpecialty())
+                        );
+                        contextMenu.show(cmbPhysios, Side.BOTTOM, 0,0);
+
+                    }
+                }catch (Exception ex){
+                    MessageUtils.showError("Error","Failed to get record");
+                }
+            }
+        });
+
+        cmbPhysios.setOnMouseExited(e->{
+            contextMenu.hide();
+        });
+
+        btnReset.setOnAction(e->{
+            getAppointment();
+            cleanForm();
+        });
+
+        btnComplete.setOnAction(e->{
+            getAppointmentComplete();
+        });
+        btnFuture.setOnAction(e->{
+            getAppointmentPastOrFuture(true);
+        });
+        btnPast.setOnAction(e->{
+            getAppointmentPastOrFuture(false);
+        });
+
 
         tableViewAppointment.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
@@ -112,17 +206,23 @@ public class AppointmentController implements Initializable {
            url = ServiceUtils.SERVER  + "/records/appointmentAdmin";
        }
         System.out.println(url);
+        genericalyGetAppointment(url);
+    }
+
+    public void genericalyGetAppointment(String url){
+        tableViewAppointment.getItems().clear();
         ServiceUtils.getResponseAsync(url,null,"GET")
                 .thenApply(json-> gson.fromJson(json, AppointmentListResponse.class))
                 .thenAccept(response->{
                     if(response.isOk()){
                         Platform.runLater(()-> {
                             appointments.setAll(response.getAppointments());
+                            //añadir un botton en cada fila
                             tableViewAppointment.setItems(appointments);
+
                         });
                     }
                 }).exceptionally(ex->{
-                    ex.printStackTrace();
                     Platform.runLater(()->{
                         MessageUtils.showError("Error","Failed to post appointment" );
                     });
@@ -130,15 +230,34 @@ public class AppointmentController implements Initializable {
                 });
     }
 
+    public void getAppointmentComplete(){
+        tableViewAppointment.getItems().clear();
+        String url = ServiceUtils.SERVER + "/records/appointmentComplete";
+        genericalyGetAppointment(url);
+    }
+
+    public void getAppointmentPastOrFuture(Boolean future){
+        tableViewAppointment.getItems().clear();
+        String url ="";
+        System.out.println(userId);
+        System.out.println(Utils.isPhysio);
+        if(future){
+            url = ServiceUtils.SERVER  + "/records/appointmentsFuture";
+        }else{
+            url = ServiceUtils.SERVER + "/records/appointmentsPast";
+        }
+        genericalyGetAppointment(url);
+    }
+
     private void loadPhysios() {
         new Thread(() -> {
             try {
                 String json = ServiceUtils.getResponse(ServiceUtils.API_URL + "/physios", null, "GET");
-                PhysioResponse response = gson.fromJson(json, PhysioResponse.class);
+                PhysioListResponse response = gson.fromJson(json, PhysioListResponse.class);
                 if (response.isOk()) {
                    Platform.runLater(() ->{
-                       for(int i = 0; i < response.getResultado().size(); i++) {
-                           cmbPhysios.getItems().add(response.getResultado().get(i).getId());
+                       for(int i = 0; i < response.getPhysios().size(); i++) {
+                           cmbPhysios.getItems().add(response.getPhysios().get(i).getId());
                        }});
                 } else {
                     MessageUtils.showError("Error", "No se pudo cargar la lista de fisioterapeutas");
@@ -149,6 +268,7 @@ public class AppointmentController implements Initializable {
         }).start();
     }
 
+
     public void getRecord(){
         String url = ServiceUtils.SERVER + "/records";
         ServiceUtils.getResponseAsync(url,null,"GET")
@@ -158,7 +278,6 @@ public class AppointmentController implements Initializable {
                         cmbRecords.getItems().add(response.getRecords().get(i).getId());
                     }
                 }).exceptionally(ex->{
-                    ex.printStackTrace();
                     Platform.runLater(()->{
                         MessageUtils.showError("Error","Failed to post patient");
                     });
@@ -168,7 +287,7 @@ public class AppointmentController implements Initializable {
 
     public void addAppointment(){
         String recordId = cmbRecords.getSelectionModel().getSelectedItem();
-        String date = datePicker.getValue().toString();
+        String date = String.valueOf(datePicker.getValue());
         String diagnosis = diagnosisField.getText();
         String observations = observationsField.getText();
         String physio = cmbPhysios.getSelectionModel().getSelectedItem();
@@ -192,13 +311,65 @@ public class AppointmentController implements Initializable {
                         });
                     }
                 }).exceptionally(ex->{
-                    ex.printStackTrace();
                     Platform.runLater(()->{
                         MessageUtils.showError("Error","Failed to post appointment" );
                     });
                     return null;
                 });
     }
+
+    public CompletableFuture<Physio> getPhysioById(){
+        CompletableFuture<Physio> future = new CompletableFuture<>();
+        String physioId = cmbPhysios.getSelectionModel().getSelectedItem();
+        String url = ServiceUtils.SERVER + "/physios/" + physioId;
+        ServiceUtils.getResponseAsync(url,null,"GET")
+                .thenApply(json->gson.fromJson(json, PhysioResponse.class))
+                .thenAccept(response->{
+                    if(response.isOk()){
+                        future.complete(response.getPhysio());
+                    }
+                }).exceptionally(ex->{
+                    Platform.runLater(()->{
+                        MessageUtils.showError("Error","Failed to post appointment" );
+                    });
+                    return null;
+                });
+        while (!future.isDone()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+        return future;
+    }
+
+    public CompletableFuture<Record> getRecordById(){
+        CompletableFuture<Record> future = new CompletableFuture<>();
+        String recordId = cmbRecords.getSelectionModel().getSelectedItem();
+        String url = ServiceUtils.SERVER + "/records/" + recordId;
+        ServiceUtils.getResponseAsync(url,null,"GET")
+                .thenApply(json->gson.fromJson(json, RecordResponse.class))
+                .thenAccept(response->{
+                    if(response.isOk()){
+                        future.complete(response.getRecord());
+                    }
+                }).exceptionally(ex->{
+                    Platform.runLater(()->{
+                        MessageUtils.showError("Error","Failed to post appointment" );
+                    });
+                    return null;
+                });
+        while (!future.isDone()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+        return future;
+    }
+
 
     public void updateAppointment(){
         addBtn.setDisable(false);
@@ -229,7 +400,6 @@ public class AppointmentController implements Initializable {
                         });
                     }
                 }).exceptionally(ex->{
-                    ex.printStackTrace();
                     Platform.runLater(()->{
                         MessageUtils.showError("Error","Failed to post appointment" );
                     });
@@ -237,8 +407,8 @@ public class AppointmentController implements Initializable {
                 });
     }
 
-    public void deleteAppointment(){
-        String url = ServiceUtils.SERVER + "/records/appointments/" + tableViewAppointment.getSelectionModel().getSelectedItem().getId();
+    public void deleteAppointment(Appointment appointment){
+        String url = ServiceUtils.SERVER + "/records/appointments/" + appointment.getId();
         ServiceUtils.getResponseAsync(url,null,"DELETE")
                 .thenApply(json->gson.fromJson(json, RecordResponse.class))
                 .thenAccept(response->{
@@ -254,7 +424,6 @@ public class AppointmentController implements Initializable {
                         });
                     }
                 }).exceptionally(ex->{
-                    ex.printStackTrace();
                     Platform.runLater(()->{
                         MessageUtils.showError("Error","Failed to post appointment" );
                     });
@@ -283,6 +452,26 @@ public class AppointmentController implements Initializable {
         observationsField.clear();
         cmbStatus.getSelectionModel().select("pending");
         cmbRecords.getSelectionModel().select(-1);
+    }
+    private <T> TableColumn<T, Void> createDeleteColumn(ObservableList<T> items) {
+        TableColumn<T, Void> colAcciones = new TableColumn<>("Acciones");
+        colAcciones.setCellFactory((Callback<TableColumn<T, Void>, TableCell<T, Void>>) column ->
+                new TableCell<>() {
+                    private final Button btn = new Button("Delete");
+                    {
+                        btn.setOnAction(e -> {
+                            Appointment item = (Appointment) getTableView().getItems().get(getIndex());
+                            System.out.println("Item to delete: " + item);
+                            deleteAppointment(item);
+                        });
+                    }
+                    @Override protected void updateItem(Void v, boolean empty) {
+                        super.updateItem(v, empty);
+                        setGraphic(empty ? null : btn);
+                    }
+                }
+        );
+        return colAcciones;
     }
 }
 

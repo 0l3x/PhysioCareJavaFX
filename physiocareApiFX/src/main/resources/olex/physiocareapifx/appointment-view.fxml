@@ -11,29 +11,42 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="593.0" prefWidth="701.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.AppointmentController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="593.0" prefWidth="879.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.AppointmentController">
    <children>
-      <VBox prefHeight="593.0" prefWidth="701.0">
+      <VBox prefHeight="593.0" prefWidth="879.0">
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="702.0">
+            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="702.0" spacing="100.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="exitBtn" mnemonicParsing="false" text="&lt; Exit" />
-                  <Label text="Appointments">
+                  <Button fx:id="exitBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="74.0" text="&lt; Exit">
                      <HBox.margin>
-                        <Insets left="260.0" />
+                        <Insets />
+                     </HBox.margin></Button>
+                  <Label prefHeight="18.0" prefWidth="100.0" text="Appointments">
+                     <HBox.margin>
+                        <Insets />
                      </HBox.margin>
                   </Label>
+                  <HBox alignment="CENTER" prefHeight="26.0" prefWidth="363.0" spacing="20.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Filter: " />
+                        <Button fx:id="btnPast" mnemonicParsing="false" text="Past" />
+                        <Button fx:id="btnFuture" mnemonicParsing="false" text="Future" />
+                        <Button fx:id="btnComplete" mnemonicParsing="false" text="Complete" />
+                        <Button fx:id="btnReset" mnemonicParsing="false" text="Reset" />
+                     </children>
+                  </HBox>
                </children>
             </HBox>
             <TableView fx:id="tableViewAppointment" prefHeight="280.0" prefWidth="681.0">
                <columns>
-                  <TableColumn fx:id="colDate" prefWidth="100" text="Date" />
-                  <TableColumn fx:id="colDiagnosis" prefWidth="100" text="Diagnosis" />
-                  <TableColumn fx:id="colObservations" prefWidth="100" text="Observations" />
-                  <TableColumn fx:id="colPhysio" prefWidth="100" text="Physio" />
-                  <TableColumn fx:id="colTreatment" prefWidth="100" text="Insuranse" />
-                  <TableColumn fx:id="colStatus" prefWidth="100" text="Status" />
+                  <TableColumn fx:id="colDate" prefWidth="112.00000035762787" text="Date" />
+                  <TableColumn fx:id="colDiagnosis" prefWidth="100.0" text="Diagnosis" />
+                  <TableColumn fx:id="colObservations" prefWidth="142.39996337890625" text="Observations" />
+                  <TableColumn fx:id="colPhysio" prefWidth="89.5999755859375" text="Physio" />
+                  <TableColumn fx:id="colTreatment" prefWidth="96.800048828125" text="Treatment" />
+                  <TableColumn fx:id="colStatus" prefWidth="142.40008544921875" text="Status" />
                </columns>
             </TableView>
             <VBox prefHeight="129.0" prefWidth="681.0" spacing="10.0">
@@ -84,7 +97,6 @@
                      <children>
                         <Button fx:id="addBtn" mnemonicParsing="false" text="Add" />
                         <Button fx:id="editBtn" mnemonicParsing="false" text="Update" />
-                        <Button fx:id="deleteBtn" mnemonicParsing="false" text="Delete" />
                         <Button fx:id="btnClean" mnemonicParsing="false" text="Clean Form" />
                      </children>
                   </HBox>
