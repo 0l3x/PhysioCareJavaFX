@@ -49,7 +49,7 @@ public class AppointmentController implements Initializable {
     @FXML
     public TableColumn<Appointment,String> colDate;
     @FXML
-    public TableColumn<Appointment,String> colDiganosis;
+    public TableColumn<Appointment,String> colDiagnosis;
     @FXML
     public TableColumn<Appointment,String> colObservations;
     @FXML
@@ -76,7 +76,7 @@ public class AppointmentController implements Initializable {
         cmbStatus.getItems().addAll("pending", "completed", "cancelled");
         cmbStatus.getSelectionModel().select("pending");
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        colDiganosis.setCellValueFactory(new PropertyValueFactory<>("diagnosis"));
+        colDiagnosis.setCellValueFactory(new PropertyValueFactory<>("diagnosis"));
         colObservations.setCellValueFactory(new PropertyValueFactory<>("observations"));
         colPhysio.setCellValueFactory(new PropertyValueFactory<>("physio"));
         colTreatment.setCellValueFactory(new PropertyValueFactory<>("treatment"));

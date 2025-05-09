@@ -29,7 +29,7 @@
             <TableView fx:id="tableViewAppointment" prefHeight="280.0" prefWidth="681.0">
                <columns>
                   <TableColumn fx:id="colDate" prefWidth="100" text="Date" />
-                  <TableColumn fx:id="colDiganosis" prefWidth="100" text="Diagnosis" />
+                  <TableColumn fx:id="colDiagnosis" prefWidth="100" text="Diagnosis" />
                   <TableColumn fx:id="colObservations" prefWidth="100" text="Observations" />
                   <TableColumn fx:id="colPhysio" prefWidth="100" text="Physio" />
                   <TableColumn fx:id="colTreatment" prefWidth="100" text="Insuranse" />
@@ -70,7 +70,7 @@
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                      <children>
-                        <Label text="Treatmemnt" />
+                        <Label text="Treatment" />
                         <TextField fx:id="treatmentField" />
                      </children>
                   </HBox>
