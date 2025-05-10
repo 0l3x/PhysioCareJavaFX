@@ -1,5 +1,6 @@
 package olex.physiocareapifx.controller;
 
+import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -18,9 +19,11 @@ import java.io.IOException;
  */
 public class MenuController {
 
-    public Button btnAppointments;
-    @FXML private Button btnPatients;
-    @FXML private Button btnPhysios;
+
+    public MFXButton btnPatients;
+    public MFXButton btnPhysios;
+    public MFXButton btnAppointments;
+    public MFXButton btnProfile;
 
     /**
      * Initializes the menu view and sets up button actions.
