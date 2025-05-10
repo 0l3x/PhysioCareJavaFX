@@ -211,7 +211,7 @@ public class PhysiosController {
             return null;
         }
 
-        return new Physio(null, name, surname, specialty, license, email);
+        return new Physio(null, name, surname, specialty, license, email,"");
     }
 
     /**

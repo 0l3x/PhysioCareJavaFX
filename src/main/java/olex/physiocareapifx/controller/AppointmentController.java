@@ -172,6 +172,7 @@ public class AppointmentController implements Initializable {
 
 
         cmbFilter.getItems().addAll("All","Completed","Future","Past");
+        cmbFilter.getSelectionModel().select("All");
         cmbFilter.setOnAction(e->{
             String selected = (String) cmbFilter.getSelectionModel().getSelectedItem();
             switch (selected) {

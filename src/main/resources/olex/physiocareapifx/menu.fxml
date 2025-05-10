@@ -16,7 +16,7 @@
          <children>
             <HBox alignment="CENTER" prefHeight="57.0" prefWidth="600.0" spacing="10.0">
                <children>
-                  <Text fill="#3c00ff" strokeType="OUTSIDE" strokeWidth="0.0" text="COHMPANY" textAlignment="CENTER" wrappingWidth="148.2418212890625">
+                  <Text fill="#3c00ff" strokeType="OUTSIDE" strokeWidth="0.0" text="COHMPANY" textAlignment="CENTER" wrappingWidth="119.2418212890625">
                      <font>
                         <Font name="Bell MT" size="18.0" />
                      </font>
@@ -25,6 +25,7 @@
                   <MFXButton fx:id="btnPhysios" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" text="PHYSIO" textFill="#2600ff" />
                   <MFXButton fx:id="btnAppointments" buttonType="RAISED" prefHeight="34.0" prefWidth="100.0" text="APPOINTMENT" textFill="#2600ff" />
                   <MFXButton fx:id="btnProfile" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" text="MY PROFILE" textFill="#2600ff" />
+                  <MFXButton fx:id="btnLogout" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" text="LOGOUT" textFill="#2600ff" />
                </children>
             </HBox>
             <ImageView fx:id="imageView" fitHeight="329.0" fitWidth="597.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
@@ -32,7 +33,7 @@
                   <Cursor fx:constant="DEFAULT" />
                </cursor>
                <image>
-                  <Image url="@images/logo.png" />
+                  <Image url="@../../../../../resources/logo.png" />
                </image>
             </ImageView>
          </children>
