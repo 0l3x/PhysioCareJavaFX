@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.effect.GaussianBlur?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -10,23 +13,35 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.MenuController">
+<AnchorPane prefHeight="460.0" prefWidth="826.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.MenuController">
    <children>
-      <VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="747.0" spacing="10.0">
+      <VBox alignment="TOP_CENTER" prefHeight="468.0" prefWidth="861.0" spacing="10.0">
          <children>
-            <HBox alignment="CENTER" prefHeight="57.0" prefWidth="600.0" spacing="10.0">
+            <HBox alignment="CENTER" prefHeight="57.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: #88e1f7;">
                <children>
-                  <Text fill="#3c00ff" strokeType="OUTSIDE" strokeWidth="0.0" text="COHMPANY" textAlignment="CENTER" wrappingWidth="119.2418212890625">
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="COHMPANY" textAlignment="CENTER" wrappingWidth="119.2418212890625">
                      <font>
-                        <Font name="Bell MT" size="18.0" />
+                        <Font name="Yu Gothic UI Regular" size="18.0" />
                      </font>
                   </Text>
-                  <MFXButton fx:id="btnPatients" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" text="PATIENT" textFill="#2600ff" />
+                  <MFXButton fx:id="btnPatients" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" rippleColor="#aacee1" text="PATIENT" textFill="#2600ff">
+                     <effect>
+                        <GaussianBlur />
+                     </effect></MFXButton>
                   <MFXButton fx:id="btnPhysios" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" text="PHYSIO" textFill="#2600ff" />
-                  <MFXButton fx:id="btnAppointments" buttonType="RAISED" prefHeight="34.0" prefWidth="100.0" text="APPOINTMENT" textFill="#2600ff" />
+                  <MFXButton fx:id="btnAppointments" buttonType="RAISED" prefHeight="34.0" prefWidth="107.0" text="APPOINTMENT" textFill="#2600ff" />
                   <MFXButton fx:id="btnProfile" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" text="MY PROFILE" textFill="#2600ff" />
                   <MFXButton fx:id="btnLogout" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" text="LOGOUT" textFill="#2600ff" />
+                  <HBox alignment="CENTER" prefHeight="46.0" prefWidth="182.0" spacing="20.0">
+                     <children>
+                        <ImageView fx:id="imageAvatar" fitHeight="46.0" fitWidth="52.0" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="lblNombre" strokeType="OUTSIDE" strokeWidth="0.0" text="Nombre" />
+                     </children>
+                  </HBox>
                </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
             </HBox>
             <ImageView fx:id="imageView" fitHeight="329.0" fitWidth="597.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
                <cursor>
@@ -35,7 +50,22 @@
                <image>
                   <Image url="@../../../../../resources/logo.png" />
                </image>
+               <effect>
+                  <Blend />
+               </effect>
             </ImageView>
+            <HBox alignment="CENTER" prefHeight="60.0" prefWidth="847.0" style="-fx-background-color: #88e1f7;">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Olex &amp; Hector, © PHYSIO COHMPANY">
+                     <font>
+                        <Font name="Arial" size="16.0" />
+                     </font>
+                  </Text>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
          </children>
       </VBox>
    </children>

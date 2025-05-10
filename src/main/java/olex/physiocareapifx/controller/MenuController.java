@@ -2,19 +2,19 @@ package olex.physiocareapifx.controller;
 
 import com.google.gson.Gson;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import olex.physiocareapifx.utils.SceneLoader;
-import olex.physiocareapifx.utils.ServiceUtils;
-import olex.physiocareapifx.utils.TokenManager;
-import olex.physiocareapifx.utils.Utils;
+import olex.physiocareapifx.model.PhysioResponse;
+import olex.physiocareapifx.utils.*;
 import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;
@@ -36,6 +36,8 @@ public class MenuController {
     public MFXButton btnProfile;
     public ImageView imageView;
     public MFXButton btnLogout;
+    public ImageView imageAvatar;
+    public Text lblNombre;
     Gson gson = new Gson();
 
     /**
@@ -44,10 +46,11 @@ public class MenuController {
     @FXML
     public void initialize() throws IOException {
         if(!Utils.isPhysio){
-            btnProfile.setVisible(false);
+            btnProfile.setDisable(true);
         }else{
-            btnProfile.setVisible(true);
+            btnProfile.setDisable(false);
         }
+        loadPhysioData();
         // Load image from resources, first convert it to base64 an then to set it as image
         byte[] imageBytes = Files.readAllBytes(Paths.get("resources/logo.png"));
 
@@ -95,4 +98,27 @@ public class MenuController {
             }
         });
     }
+
+    public void loadPhysioData() {
+        new Thread(() -> {
+            try {
+                String json = ServiceUtils.getResponse(ServiceUtils.API_URL + "/physios/" + Utils.userId, null, "GET");
+                PhysioResponse response = gson.fromJson(json, PhysioResponse.class);
+                if (response.isOk()) {
+                    Platform.runLater(() -> {
+                        lblNombre.setText(response.getPhysio().getName());
+                        if(response.getPhysio().getAvatar() != null){
+                            imageAvatar.setImage(new Image(response.getPhysio().getAvatar(),200, 0,true, true, true));
+                        }
+
+                    });
+                } else {
+                    Platform.runLater(() -> MessageUtils.showError("Error", "Failed to load physio data"));
+                }
+            } catch (Exception e) {
+                Platform.runLater(() -> MessageUtils.showError("Error", "Failed to load physio data"));
+            }
+        }).start();
+    }
+
 }
