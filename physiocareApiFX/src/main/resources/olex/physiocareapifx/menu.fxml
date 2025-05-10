@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -9,20 +11,22 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.MenuController">
    <children>
-      <VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="10.0">
+      <VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="600.0" spacing="10.0">
          <children>
-            <Text fill="#3c00ff" strokeType="OUTSIDE" strokeWidth="0.0" text="COHMPANY" textAlignment="CENTER" wrappingWidth="600.2418212890625">
-               <font>
-                  <Font name="Bell MT" size="35.0" />
-               </font>
-            </Text>
-            <HBox prefHeight="94.0" prefWidth="601.0">
+            <HBox alignment="CENTER" prefHeight="57.0" prefWidth="600.0" spacing="10.0">
                <children>
-                  <Button fx:id="btnPatients" mnemonicParsing="false" prefHeight="111.0" prefWidth="218.0" text="Patients" />
-                  <Button fx:id="btnPhysios" mnemonicParsing="false" prefHeight="111.0" prefWidth="218.0" text="Physios" />
-                  <Button fx:id="btnAppointments" mnemonicParsing="false" prefHeight="111.0" prefWidth="218.0" text="Appointments" />
+                  <Text fill="#3c00ff" strokeType="OUTSIDE" strokeWidth="0.0" text="COHMPANY" textAlignment="CENTER" wrappingWidth="148.2418212890625">
+                     <font>
+                        <Font name="Bell MT" size="18.0" />
+                     </font>
+                  </Text>
+                  <Button fx:id="btnPatients" mnemonicParsing="false" prefHeight="32.0" prefWidth="94.0" text="Patients" />
+                  <Button fx:id="btnPhysios" mnemonicParsing="false" prefHeight="33.0" prefWidth="94.0" text="Physios" />
+                  <Button fx:id="btnAppointments" mnemonicParsing="false" prefHeight="33.0" prefWidth="94.0" text="Appointments" />
+                  <MFXButton fx:id="btnProfile" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" text="MY PROFILE" textFill="#2600ff" />
                </children>
             </HBox>
+            <ImageView fitHeight="333.0" fitWidth="598.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </VBox>
    </children>
