@@ -162,14 +162,16 @@ public class ServiceUtils {
         return result.toString();
     }
     public static CompletableFuture<String>
+
     getResponseAsync(String url, String data, String method) {
         return CompletableFuture.supplyAsync(() -> getResponseCompletable(url, data, method));
     }
+
     public static boolean login(String user, String password){
         try{
-            String credentials = new Gson().toJson(new LoginRequest(password,user));
+            String credentials = new Gson().toJson(new LoginRequest(user, password));
             System.out.println(credentials);
-            String jsonResponse = getResponse(SERVER+"/auth/login",credentials,"POST");
+            String jsonResponse = getResponse(SERVER+"/auth/login", credentials,"POST");
 
             AuthResponse authResponse = new Gson().fromJson(jsonResponse, AuthResponse.class);
             if(authResponse != null && authResponse.isOk()){
@@ -183,4 +185,5 @@ public class ServiceUtils {
         }
         return false;
     }
+
 }

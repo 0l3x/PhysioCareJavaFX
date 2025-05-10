@@ -3,6 +3,9 @@ module olex.physiocareapifx {
     requires org.kordamp.bootstrapfx.core;
     requires jdk.jshell;
     requires MaterialFX;
+    requires kernel;
+    requires layout;
+    requires html2pdf;
 
     opens olex.physiocareapifx to javafx.fxml;
     opens olex.physiocareapifx.controller to javafx.fxml;
@@ -13,4 +16,5 @@ module olex.physiocareapifx {
     exports olex.physiocareapifx.model;
     exports olex.physiocareapifx.services;
     exports olex.physiocareapifx.utils;
+    exports olex.physiocareapifx.utils.PDFrelated;
 }
