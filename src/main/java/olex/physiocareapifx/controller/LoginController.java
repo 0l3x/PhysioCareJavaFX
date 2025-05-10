@@ -61,8 +61,8 @@ public class LoginController {
                 }else{
                     Utils.isPhysio = false;
                 }
-                System.out.println(Utils.userId);
-                System.out.println(Utils.isPhysio);
+                System.out.println("Id del Usuario: " + Utils.userId);
+                System.out.println("Puede ver perfil: " + Utils.isPhysio);
                 SceneLoader.loadScreen("menu.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
                 //loadMenuView();
             } else {
