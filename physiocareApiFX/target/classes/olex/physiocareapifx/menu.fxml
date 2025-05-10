@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
-
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -13,7 +12,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.MenuController">
    <children>
-      <VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="600.0" spacing="10.0">
+      <VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="747.0" spacing="10.0">
          <children>
             <HBox alignment="CENTER" prefHeight="57.0" prefWidth="600.0" spacing="10.0">
                <children>
@@ -28,12 +27,12 @@
                   <MFXButton fx:id="btnProfile" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" text="MY PROFILE" textFill="#2600ff" />
                </children>
             </HBox>
-            <ImageView fitHeight="329.0" fitWidth="597.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imageView" fitHeight="329.0" fitWidth="597.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
                <cursor>
                   <Cursor fx:constant="DEFAULT" />
                </cursor>
                <image>
-                  <Image url="@../../../../../resources/logo.png" />
+                  <Image url="@images/logo.png" />
                </image>
             </ImageView>
          </children>

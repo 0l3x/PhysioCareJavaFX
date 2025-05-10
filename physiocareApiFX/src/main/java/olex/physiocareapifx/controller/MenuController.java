@@ -4,6 +4,8 @@ import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -24,13 +26,13 @@ public class MenuController {
     public MFXButton btnPhysios;
     public MFXButton btnAppointments;
     public MFXButton btnProfile;
+    public ImageView imageView;
 
     /**
      * Initializes the menu view and sets up button actions.
      */
     @FXML
     public void initialize() {
-        btnPatients.getStyleClass().setAll("btn","btn-danger");
         btnPatients.setOnAction(actionEvent -> {
             try {
                 SceneLoader.loadScreen("patient-view.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());

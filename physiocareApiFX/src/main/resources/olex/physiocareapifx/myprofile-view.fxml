@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="olex.physiocareapifx.MyprofileView"
-            prefHeight="400.0" prefWidth="600.0">
 
+<AnchorPane prefHeight="196.0" prefWidth="442.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.MyprofileView">
+   <children>
+      <HBox prefHeight="188.0" prefWidth="435.0">
+         <children>
+            <ImageView fitHeight="101.0" fitWidth="141.0" pickOnBounds="true" preserveRatio="true" />
+            <VBox alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="286.0" prefWidth="100.0">
+               <children>
+                  <Text fx:id="lblLogin" strokeType="OUTSIDE" strokeWidth="0.0" text="Login" />
+                  <Text fx:id="lblNombre" strokeType="OUTSIDE" strokeWidth="0.0" text="NOMBRE" />
+                  <Text fx:id="lblApellidos" strokeType="OUTSIDE" strokeWidth="0.0" text="Apellidos" />
+                  <Text fx:id="lblLicense" strokeType="OUTSIDE" strokeWidth="0.0" text="LicenseNumber" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
 </AnchorPane>
