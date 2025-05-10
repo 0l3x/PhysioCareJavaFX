@@ -16,5 +16,5 @@ module olex.physiocareapifx {
     exports olex.physiocareapifx.model;
     exports olex.physiocareapifx.services;
     exports olex.physiocareapifx.utils;
-    exports olex.physiocareapifx.utils.PDFrelated;
+    exports olex.physiocareapifx.utils.pdf;
 }
