@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import io.github.palexdev.materialfx.controls.legacy.MFXLegacyComboBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -31,10 +32,7 @@
                   <HBox alignment="CENTER" prefHeight="26.0" prefWidth="363.0" spacing="20.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Filter: " />
-                        <Button fx:id="btnPast" mnemonicParsing="false" text="Past" />
-                        <Button fx:id="btnFuture" mnemonicParsing="false" text="Future" />
-                        <Button fx:id="btnComplete" mnemonicParsing="false" text="Complete" />
-                        <Button fx:id="btnReset" mnemonicParsing="false" text="Reset" />
+                        <MFXLegacyComboBox fx:id="cmbFilter" blendMode="MULTIPLY" cache="true" cacheHint="SPEED" depthTest="ENABLE" lineColor="#0869f2" prefHeight="23.0" prefWidth="97.0" />
                      </children>
                   </HBox>
                </children>

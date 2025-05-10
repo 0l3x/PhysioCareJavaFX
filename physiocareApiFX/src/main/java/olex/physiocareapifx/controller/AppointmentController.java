@@ -1,6 +1,7 @@
 package olex.physiocareapifx.controller;
 
 import com.google.gson.Gson;
+import io.github.palexdev.materialfx.controls.legacy.MFXLegacyComboBox;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -69,10 +70,7 @@ public class AppointmentController implements Initializable {
     public ComboBox<String> cmbRecords;
     public Button btnClean;
     public ComboBox<String> cmbPhysios;
-    public Button btnPast;
-    public Button btnFuture;
-    public Button btnComplete;
-    public Button btnReset;
+    public MFXLegacyComboBox<String> cmbFilter;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -144,6 +142,7 @@ public class AppointmentController implements Initializable {
                 contextMenu.hide();
                 return;
             }
+            //Completable future para esperar a que responda
             CompletableFuture<Physio> physio = getPhysioById();
             if(physio != null){
                 try{
@@ -170,22 +169,26 @@ public class AppointmentController implements Initializable {
             contextMenu.hide();
         });
 
-        btnReset.setOnAction(e->{
-            getAppointment();
-            cleanForm();
-        });
-
-        btnComplete.setOnAction(e->{
-            getAppointmentComplete();
-        });
-        btnFuture.setOnAction(e->{
-            getAppointmentPastOrFuture(true);
-        });
-        btnPast.setOnAction(e->{
-            getAppointmentPastOrFuture(false);
-        });
 
 
+        cmbFilter.getItems().addAll("All","Completed","Future","Past");
+        cmbFilter.setOnAction(e->{
+            String selected = (String) cmbFilter.getSelectionModel().getSelectedItem();
+            switch (selected) {
+                case "All" -> {
+                    getAppointment();
+                }
+                case "Completed" -> {
+                    getAppointmentComplete();
+                }
+                case "Future" -> {
+                    getAppointmentPastOrFuture(true);
+                }
+                case "Past" -> {
+                    getAppointmentPastOrFuture(false);
+                }
+            }
+        });
         tableViewAppointment.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 fillFieldsFromAppointment(newVal);

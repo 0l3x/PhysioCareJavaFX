@@ -1,9 +1,8 @@
 module olex.physiocareapifx {
-    requires javafx.controls;
-    requires javafx.fxml;
     requires com.google.gson;
     requires org.kordamp.bootstrapfx.core;
     requires jdk.jshell;
+    requires MaterialFX;
 
     opens olex.physiocareapifx to javafx.fxml;
     opens olex.physiocareapifx.controller to javafx.fxml;
