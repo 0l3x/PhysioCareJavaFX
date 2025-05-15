@@ -11,7 +11,7 @@
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="593.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.PhysiosController">
    <children>
 
-      <TableView fx:id="tableViewPhysio" layoutX="51.0" layoutY="39.0" prefHeight="254.0" prefWidth="498.0">
+      <TableView fx:id="tableViewPhysio" layoutX="51.0" layoutY="39.0" onMouseClicked="#onDoubleClick" prefHeight="254.0" prefWidth="498.0">
          <columns>
             <TableColumn fx:id="colName" prefWidth="100" text="Name" />
             <TableColumn fx:id="colSurname" prefWidth="100" text="Surname" />

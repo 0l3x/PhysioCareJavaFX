@@ -23,6 +23,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 
+import static olex.physiocareapifx.utils.Utils.isPhysio;
+
 /**
  * Controller for the main menu view.
  * Handles navigation to the patient and physio management views.
@@ -45,12 +47,15 @@ public class MenuController {
      */
     @FXML
     public void initialize() throws IOException {
-        if(!Utils.isPhysio){
+        if(!isPhysio){
             btnProfile.setDisable(true);
+            lblNombre.setText("Admin");
+            imageAvatar.setImage(null);
         }else{
             btnProfile.setDisable(false);
+           loadPhysioData();
         }
-        loadPhysioData();
+
         // Load image from resources, first convert it to base64 an then to set it as image
         byte[] imageBytes = Files.readAllBytes(Paths.get("resources/logo.png"));
 
@@ -85,9 +90,17 @@ public class MenuController {
         });
         btnPhysios.setOnAction(actionEvent -> {
             try {
-                SceneLoader.loadScreen("physio-view.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
+                System.out.println("Physio ID: " + Utils.userId);
+                if(isPhysio){
+                    Utils.userPhysio = Utils.userId;
+                    SceneLoader.loadScreen("physio-detail-view.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
+                }else{
+                    SceneLoader.loadScreen("physio-view.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
+
+                }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                MessageUtils.showError("Error", "Failed to load physio data"+e.getMessage());
             }
         });
         btnAppointments.setOnAction(actionEvent -> {

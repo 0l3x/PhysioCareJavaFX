@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Physio;
@@ -14,6 +15,7 @@ import olex.physiocareapifx.services.PhysioService.Method;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
+import olex.physiocareapifx.utils.Utils;
 
 import java.io.IOException;
 
@@ -238,4 +240,14 @@ public class PhysiosController {
         tableViewPhysio.getSelectionModel().clearSelection();
     }
 
+    public void onDoubleClick(MouseEvent mouseEvent) {
+        if (mouseEvent.getClickCount() == 2) {
+            try{
+                Utils.userPhysio = tableViewPhysio.getSelectionModel().getSelectedItem().getId();
+                SceneLoader.loadScreen("physio-detail-view.fxml",(Stage) ((Node) mouseEvent.getSource()).getScene().getWindow());
+            }catch (Exception e){
+                MessageUtils.showError("Error", "Fallo al cargar el fisio.");
+            }
+        }
+    }
 }
