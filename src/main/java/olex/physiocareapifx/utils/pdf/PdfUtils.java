@@ -1,162 +1,97 @@
 package olex.physiocareapifx.utils.pdf;
 
-import com.google.gson.Gson;
-import com.itextpdf.html2pdf.HtmlConverter;
-import olex.physiocareapifx.model.Patients.Patient;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.SolidBorder;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import olex.physiocareapifx.model.Records.Record;
-import olex.physiocareapifx.model.Records.RecordResponse;
-import olex.physiocareapifx.utils.ServiceUtils;
+import olex.physiocareapifx.services.RecordService;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 
 public class PdfUtils {
-
-    private Record record;
-    private Patient patient;
-
-    public boolean loadRecordAndPatient(String recordId) {
-        try {
-            boolean ok = ServiceUtils.login("Olex", "1234");
-            if (!ok) {
-                System.err.println("!! Login fallido");
-                return false;
-            }
-
-            // Obtener el Record
-            String recordJson = ServiceUtils.getResponse(ServiceUtils.API_URL + "/records/" + recordId, null, "GET");
-            RecordResponse response = new Gson().fromJson(recordJson, RecordResponse.class);
-            this.record = response.getRecord();
-
-            if (record == null) {
-                System.err.println("No se encontró el historial.");
-                return false;
-            }
-
-            // Obtener el Patient relacionado
-            String patientJson = ServiceUtils.getResponse(ServiceUtils.API_URL + "/patients/" + record.getPatient(), null, "GET");
-            this.patient = new Gson().fromJson(patientJson, Patient.class);
-
-            return true;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public Record getRecord() {
-        return record;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public String buildSimpleHtml(Record record, Patient patient) {
-        StringBuilder html = new StringBuilder();
-
-        html.append("<html><body>");
-        html.append("<h1>Historial Médico</h1>");
-        html.append("<p><b>Paciente:</b> ").append(patient.getName()).append(" ").append(patient.getSurname()).append("</p>");
-        html.append("<p><b>Historial:</b> ").append(record.getMedicalRecord()).append("</p>");
-        html.append("<h2>Citas</h2>");
-        html.append("<ul>");
-        for (var app : record.getAppointments()) {
-            html.append("<li>");
-            html.append("Fecha: ").append(app.getDate()).append(", ");
-            html.append("Diagnóstico: ").append(app.getDiagnosis()).append(", ");
-            html.append("Tratamiento: ").append(app.getTreatment());
-            html.append("</li>");
-        }
-        html.append("</ul>");
-        html.append("</body></html>");
-
-        return html.toString();
-    }
-
-
-
-    public static void generatePdfFromHtml(String htmlContent, String filename) {
-        try {
-            File outputDir = new File("output");
-            if (!outputDir.exists()) outputDir.mkdirs();
-
-            String dest = "output/" + filename;
-            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(dest));
-            System.out.println("✅ PDF generado en: " + dest);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
+    private static final Paragraph header = new Paragraph("COHMPANY Clinic S.A. - S/ McDonalds, Tenesse")
+            .setFontSize(16)
+            .setItalic()
+            .setTextAlignment(TextAlignment.RIGHT)
+            .setMarginBottom(20);
 
     public static void main(String[] args) {
-
-        PdfUtils pdfUtils = new PdfUtils();
-
-            boolean ok = ServiceUtils.login("Olex", "1234");
-
-            if (!ok) {
-                System.err.println("!! Login fallido");
-            }
-
-        if (!pdfUtils.loadRecordAndPatient("67f3fe3996b49b1892b182f0")) {
-            System.err.println("!! Login fallido o datos no encontrados");
-            return;
-        }
-
-        Record record = pdfUtils.getRecord();
-        Patient patient = pdfUtils.getPatient();
-        System.out.println("Generando Html");
-        // Generar HTML desde los datos
-        String html = pdfUtils.buildSimpleHtml(record, patient);
-        System.out.println("Generado HTML");
-
-        System.out.println("Generando PDF");
-        // Generar PDF
-        String filename = "historial_" + (patient.getSurname() != null ? patient.getSurname().replace(" ", "_") : "desconocido") + ".pdf";
-        generatePdfFromHtml(html, filename);
-        System.out.println("Generado PDF");
-
-
-//        boolean ok = ServiceUtils.login("Olex", "1234");
-//
-//        if (!ok) {
-//            System.err.println("!! Login fallido");
-//        }
-//
-//        try {
-//            // Paso 2: hacer la consulta GET
-//            String recordId = "67f3fe3996b49b1892b182f0"; // <-- cambia por uno válido
-//            String url = ServiceUtils.API_URL + "/records/" + recordId;
-//            String jsonResponse = ServiceUtils.getResponse(url, null, "GET");
-//
-//            // Paso 3: parsear con Gson
-//            RecordResponse response = new Gson().fromJson(jsonResponse, RecordResponse.class);
-//            Record record = response.getRecord();
-//
-//            // Paso 4: mostrar por consola
-//            System.out.println("!! Record ID: " + record.getId());
-//            System.out.println("Paciente ID: " + record.getPatient());
-//            System.out.println("Historial: " + record.getMedicalRecord());
-//            System.out.println("Citas:");
-//            record.getAppointments().forEach(app -> {
-//                System.out.println(" - Fecha: " + app.getDate());
-//                System.out.println("   Fisio ID: " + app.getPhysio());
-//                System.out.println("   Diagnóstico: " + app.getDiagnosis());
-//                System.out.println("   Tratamiento: " + app.getTreatment());
-//                System.out.println("   Observaciones: " + app.getObservations());
-//                System.out.println("   Estado: " + app.getStatus());
-//                System.out.println("   ID: " + app.getId());
-//                System.out.println();
-//            });
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        RecordService.getRecordById("67f3fe3996b49b1892b182f0")
+                .thenAccept(record -> medicalRecordPdfCreator(record));
     }
 
+    public static void medicalRecordPdfCreator(Record record){
+        String dest = "./output/records/" + record.getPatient().getInsuranceNumber() + ".pdf";
+        Document document;
+        try{
+            PdfWriter writer = new PdfWriter(dest);
+            PdfDocument pdf = new PdfDocument(writer);
+            document = new Document(pdf);
+            // Header
+            document.add(header);
+            // Title
+            Paragraph title = new Paragraph("Medical Record")
+                    .setFontSize(16)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginBottom(20);
+            document.add(title);
+            // Tabla with patient info
+            float[] colWidths = {2, 4};
+            Table recordInfo = new Table(UnitValue.createPercentArray(colWidths));
+            recordInfo.setWidth(UnitValue.createPercentValue(100));
+            recordInfo.addCell(getHeaderCell("Record ID"));
+            recordInfo.addCell(String.valueOf(record.getId()));
+            recordInfo.addCell(getHeaderCell("Patient's Insurance Number"));
+            recordInfo.addCell(String.valueOf(record.getPatient().getInsuranceNumber()));
+            recordInfo.addCell(getHeaderCell("Patient Name"));
+            recordInfo.addCell(record.getPatient().getFullName());
+            recordInfo.addCell(getHeaderCell("Email"));
+            recordInfo.addCell(record.getPatient().getEmail());
+            document.add(recordInfo);
 
+            // Space
+            document.add(new Paragraph("\n"));
+            // Medical record
+            Paragraph medTitle = new Paragraph("Description:")
+                    .setFontSize(16)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.LEFT)
+                    .setMarginBottom(10);
+            document.add(medTitle);
+
+            Paragraph medRecord = new Paragraph(record.getMedicalRecord())
+                    .setFontSize(12)
+                    .setTextAlignment(TextAlignment.JUSTIFIED);
+
+            document.add(medRecord);
+
+            document.close();
+            System.out.println("Medical Record PDF created successfully.");
+
+            File pdfFile = new File(dest);
+//            if (pdfFile.exists()) {
+//                Sftp.savePDF(pdfFile.getAbsolutePath(), pdfFile.getName());
+//            }
+
+        }catch (FileNotFoundException e) {
+            System.out.println("File not found: " + e.getMessage());
+        }
+    }
+
+        private static Cell getHeaderCell(String text) {
+        return new Cell().add(new Paragraph(text))
+                .setBackgroundColor(ColorConstants.LIGHT_GRAY)
+                .setBold()
+                .setBorder(new SolidBorder(ColorConstants.GRAY, 1))
+                .setTextAlignment(TextAlignment.LEFT);
+    }
 }
