@@ -24,16 +24,34 @@ public class PdfUtils {
             .setMarginBottom(20);
 
     public static void main(String[] args) {
+        System.out.println("Creating PDF...");
         RecordService.getRecordById("67f3fe3996b49b1892b182f0")
                 .thenAccept(record ->{
-                    medicalRecordPdfCreator(record.getRecord());
+                    if(record.isOk()) {
+                        System.out.println("PDF created");
+                        System.out.println("Record ID: " + record.getRecord().getId());
+                        medicalRecordPdfCreator(record.getRecord());
+                    }else{
+                        System.out.println("Error: " + record.getError());
+                    }
+                }).exceptionally(e -> {
+                    System.out.println("Error: " + e.getMessage());
+                    return null;
                 });
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void medicalRecordPdfCreator(Record record){
-        String dest = "/output/records/" + record.getPatient().getInsuranceNumber() + ".pdf";
+        String dest = "src/main/resources/records/" + record.getPatient().getInsuranceNumber() + ".pdf";
         Document document;
         try{
+            System.out.println("Creating PDF2...");
             PdfWriter writer = new PdfWriter(dest);
             PdfDocument pdf = new PdfDocument(writer);
             document = new Document(pdf);
@@ -83,6 +101,11 @@ public class PdfUtils {
 //            if (pdfFile.exists()) {
 //                Sftp.savePDF(pdfFile.getAbsolutePath(), pdfFile.getName());
 //            }
+            if (pdfFile.exists()) {
+                System.out.println("PDF file exists: " + pdfFile.getAbsolutePath());
+            } else {
+                System.out.println("PDF file does not exist: " + pdfFile.getAbsolutePath());
+            }
 
         }catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());

@@ -14,9 +14,12 @@ import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Patients.PatientResponse;
 import olex.physiocareapifx.services.PatientService;
 import olex.physiocareapifx.services.PatientService.Method;
+import olex.physiocareapifx.services.RecordService;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
+import olex.physiocareapifx.utils.pdf.PdfUtils;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

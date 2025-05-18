@@ -89,6 +89,8 @@ public class ServiceUtils {
     public static String getResponseCompletable(String url, String data, String method) {
         BufferedReader bufInput = null;
         StringJoiner result = new StringJoiner("\n");
+        System.out.println("URL enviada: " + url);
+        TokenManager.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6ImhlY3RvcjIiLCJyb2wiOiJhZG1pbiIsImlkIjoiNjdmM2ZlMzg5NmI0OWIxODkyYjE4MmQ2IiwiaWF0IjoxNzQ3NTczNTM5LCJleHAiOjE3NDc1ODA3Mzl9.xeYNo_rNhJP-N8grUFl6ONgOhcfXtI-ttBxwBo_06dg");
         try {
             URL urlConn = new URL(url);
             HttpURLConnection conn = (HttpURLConnection) urlConn.openConnection();
@@ -107,6 +109,7 @@ public class ServiceUtils {
 
             // If set, send the authentication token
             if(TokenManager.getToken() != null) {
+                System.out.println("Token: " + TokenManager.getToken());
                 conn.setRequestProperty("Authorization", "Bearer " + TokenManager.getToken());
             }
 
@@ -143,7 +146,7 @@ public class ServiceUtils {
                     result.add(line);
                 }
                 System.out.println("Response code: " + responseCode);
-                System.out.println("Response: " + result.toString());
+                System.out.println("Response: " + result);
             }
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
@@ -160,9 +163,7 @@ public class ServiceUtils {
 
         return result.toString();
     }
-    public static CompletableFuture<String>
-
-    getResponseAsync(String url, String data, String method) {
+    public static CompletableFuture<String> getResponseAsync(String url, String data, String method) {
         return CompletableFuture.supplyAsync(() -> getResponseCompletable(url, data, method));
     }
     public static boolean login(String user, String password){

@@ -11,7 +11,7 @@ public class RecordService {
 
     public static CompletableFuture<RecordResponse> getRecordById(String id) {
         return ServiceUtils.getResponseAsync(
-                ServiceUtils.API_URL + "records/" + id,
+                ServiceUtils.API_URL + "/records/patient/" + id,
                 null,
                 "GET"
         ).thenApply(response -> gson.fromJson(response, RecordResponse.class));
