@@ -15,4 +15,5 @@ public class RecordService {
                 null,
                 "GET"
         ).thenApply(response -> gson.fromJson(response, RecordResponse.class));
+    }
 }

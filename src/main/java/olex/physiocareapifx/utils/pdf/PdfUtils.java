@@ -31,7 +31,7 @@ public class PdfUtils {
     }
 
     public static void medicalRecordPdfCreator(Record record){
-        String dest = "./output/records/" + record.getPatient().getInsuranceNumber() + ".pdf";
+        String dest = "/output/records/" + record.getPatient().getInsuranceNumber() + ".pdf";
         Document document;
         try{
             PdfWriter writer = new PdfWriter(dest);
