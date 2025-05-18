@@ -301,3 +301,9 @@ build/
 src/main/resources/client_secret.json
 tokens/StoredCredential
 reports/
+
+
+#pdfs
+/resources/patients/*
+/resources/records/*
+/resources/physios/*

@@ -20,17 +20,17 @@ public class PdfUtils {
     private static final Paragraph header = new Paragraph("COHMPANY Clinic S.A. - S/ McDonalds, Tenesse")
             .setFontSize(16)
             .setItalic()
-            .setTextAlignment(TextAlignment.RIGHT)
+            .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(20);
 
     public static void main(String[] args) {
-        System.out.println("Creating PDF...");
+        System.out.println("Creating PDF de record...");
         RecordService.getRecordById("67f3fe3996b49b1892b182f0")
                 .thenAccept(record ->{
                     if(record.isOk()) {
                         System.out.println("PDF created");
                         System.out.println("Record ID: " + record.getRecord().getId());
-                        medicalRecordPdfCreator(record.getRecord());
+                        createMedicalRecordPdf(record.getRecord());
                     }else{
                         System.out.println("Error: " + record.getError());
                     }
@@ -47,24 +47,21 @@ public class PdfUtils {
         }
     }
 
-    public static void medicalRecordPdfCreator(Record record){
-        String dest = "src/main/resources/records/" + record.getPatient().getInsuranceNumber() + ".pdf";
+    public static void createMedicalRecordPdf(Record record){
+        String dest = "resources/records/" + record.getPatient().getInsuranceNumber() + ".pdf";
         Document document;
         try{
             System.out.println("Creating PDF2...");
             PdfWriter writer = new PdfWriter(dest);
             PdfDocument pdf = new PdfDocument(writer);
             document = new Document(pdf);
-            // Header
             document.add(header);
-            // Title
             Paragraph title = new Paragraph("Medical Record")
                     .setFontSize(16)
                     .setBold()
                     .setTextAlignment(TextAlignment.CENTER)
                     .setMarginBottom(20);
             document.add(title);
-            // Tabla with patient info
             float[] colWidths = {2, 4};
             Table recordInfo = new Table(UnitValue.createPercentArray(colWidths));
             recordInfo.setWidth(UnitValue.createPercentValue(100));
@@ -78,9 +75,7 @@ public class PdfUtils {
             recordInfo.addCell(record.getPatient().getEmail());
             document.add(recordInfo);
 
-            // Space
             document.add(new Paragraph("\n"));
-            // Medical record
             Paragraph medTitle = new Paragraph("Description:")
                     .setFontSize(16)
                     .setBold()
@@ -112,11 +107,11 @@ public class PdfUtils {
         }
     }
 
-        private static Cell getHeaderCell(String text) {
+    private static Cell getHeaderCell(String text) {
         return new Cell().add(new Paragraph(text))
-                .setBackgroundColor(ColorConstants.LIGHT_GRAY)
+                .setBackgroundColor(ColorConstants.CYAN)
                 .setBold()
-                .setBorder(new SolidBorder(ColorConstants.GRAY, 1))
+                .setBorder(new SolidBorder(ColorConstants.BLUE, 1))
                 .setTextAlignment(TextAlignment.LEFT);
     }
 }

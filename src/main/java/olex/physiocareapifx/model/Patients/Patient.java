@@ -1,6 +1,10 @@
 package olex.physiocareapifx.model.Patients;
 
 import com.google.gson.annotations.SerializedName;
+import com.itextpdf.kernel.pdf.PdfArray;
+import olex.physiocareapifx.model.Appointments.Appointment;
+
+import java.util.List;
 
 /**
  * Patient model class to match the API structure.
@@ -14,6 +18,7 @@ public class Patient {
     private String address;
     private String insuranceNumber;
     private String email;
+    private List<Appointment> appointments;
 
     public Patient() {}
 
@@ -87,5 +92,13 @@ public class Patient {
 
     public String getFullName() {
         return name + " " + surname;
+    }
+
+    public List<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(List<Appointment> appointments) {
+        this.appointments = appointments;
     }
 }

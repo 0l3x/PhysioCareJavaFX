@@ -5,13 +5,22 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Patients.Patient;
+import olex.physiocareapifx.model.Patients.PatientResponse;
+import olex.physiocareapifx.model.Records.RecordResponse;
 import olex.physiocareapifx.utils.ServiceUtils;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A JavaFX Service for performing asynchronous CRUD operations on patients.
  * It supports POST, PUT and DELETE methods to communicate with the REST API.
  */
 public class PatientService extends Service<BaseResponse> {
+    private static final Gson gson = new Gson();
+
+    // para PDFS
+
+
     /**
      * Enum representing the HTTP method to use.
      */
