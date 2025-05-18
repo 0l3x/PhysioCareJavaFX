@@ -25,7 +25,9 @@ public class PdfUtils {
 
     public static void main(String[] args) {
         RecordService.getRecordById("67f3fe3996b49b1892b182f0")
-                .thenAccept(record -> medicalRecordPdfCreator(record));
+                .thenAccept(record ->{
+                    medicalRecordPdfCreator(record.getRecord());
+                });
     }
 
     public static void medicalRecordPdfCreator(Record record){
