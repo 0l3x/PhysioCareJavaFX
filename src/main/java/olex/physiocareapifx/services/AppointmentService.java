@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import javafx.application.Platform;
 import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
+import olex.physiocareapifx.model.Appointments.AppointmentResponse;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.ServiceUtils;
 
@@ -22,5 +23,30 @@ public class AppointmentService {
                 "GET"
         ).thenApply(
             json-> gson.fromJson(json, AppointmentListResponse.class).getAppointments());
+    }
+
+    public static CompletableFuture<AppointmentResponse> createAppointment(String url, Appointment appointment){
+        return ServiceUtils.getResponseAsync(
+                url,
+                gson.toJson(appointment),
+                "POST"
+        ).thenApply(response -> gson.fromJson(response, AppointmentResponse.class));
+    }
+
+    public static CompletableFuture<AppointmentResponse> updateAppointment(String url, Appointment appointment){
+        return ServiceUtils.getResponseAsync(
+                url,
+                gson.toJson(appointment),
+                "PUT"
+        ).thenApply(response -> gson.fromJson(response, AppointmentResponse.class));
+    }
+
+
+    public static CompletableFuture<Void> deleteAppointment(String url) {
+        return ServiceUtils.getResponseAsync(
+                url,
+                null,
+                "DELETE"
+        ).thenApply(__->null);
     }
 }

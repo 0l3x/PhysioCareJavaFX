@@ -17,4 +17,5 @@ public class Utils {
         // 2. Codifica ese array a Base64 y devuelve el resultado
         return Base64.getEncoder().encodeToString(imageBytes);
     }
+
 }

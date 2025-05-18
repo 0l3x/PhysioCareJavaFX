@@ -90,7 +90,6 @@ public class ServiceUtils {
         BufferedReader bufInput = null;
         StringJoiner result = new StringJoiner("\n");
         System.out.println("URL enviada: " + url);
-        TokenManager.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6ImhlY3RvcjIiLCJyb2wiOiJhZG1pbiIsImlkIjoiNjdmM2ZlMzg5NmI0OWIxODkyYjE4MmQ2IiwiaWF0IjoxNzQ3NTczNTM5LCJleHAiOjE3NDc1ODA3Mzl9.xeYNo_rNhJP-N8grUFl6ONgOhcfXtI-ttBxwBo_06dg");
         try {
             URL urlConn = new URL(url);
             HttpURLConnection conn = (HttpURLConnection) urlConn.openConnection();

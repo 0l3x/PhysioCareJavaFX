@@ -15,11 +15,14 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
+import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.model.Physios.PhysioResponse;
 import olex.physiocareapifx.model.Records.Record;
 import olex.physiocareapifx.model.Records.RecordListResponse;
 import olex.physiocareapifx.model.Records.RecordResponse;
+import olex.physiocareapifx.services.AppointmentService;
+import olex.physiocareapifx.services.PhysioService;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
@@ -164,6 +167,128 @@ public class PhysioDetailController implements Initializable {
         getPhysioById();
     }
 
+    //// Get Appointments
+    /**
+     * Get all appointments
+     */
+    public void getAppointment(){
+        tableViewAppointment.getItems().clear();
+        String url ="";
+        System.out.println(userId);
+        System.out.println(Utils.isPhysio);
+        if(Utils.isPhysio){
+            url = ServiceUtils.API_URL + "/records/appointments/physio/" + userId;
+        }else{
+            url = ServiceUtils.API_URL  + "/records/appointmentAdmin";
+        }
+        genericalyGetAppointment(url);
+    }
+    /**
+     * Fucntion generic to get appointments by url
+     * @param url url to get appointments
+     */
+    public void genericalyGetAppointment(String url){
+        AppointmentService.getAppointments(url)
+                .thenAccept(appointments -> {
+                    Platform.runLater(() -> {
+                        this.appointments.clear();
+                        this.appointments.addAll(appointments);
+                        tableViewAppointment.setItems(this.appointments);
+                    });
+                }).exceptionally(ex -> {
+                    Platform.runLater(() -> {
+                        MessageUtils.showError("Error", "Failed to get appointments");
+                    });
+                    return null;
+                });
+    }
+    //////////////////// add Appointments /////////////////////////
+    public void addAppointment(){
+        String recordId = cmbRecords.getSelectionModel().getSelectedItem().toString();
+        String date = String.valueOf(datePicker.getValue());
+        String diagnosis = diagnosisField.getText();
+        String observations = observationsField.getText();
+        String physio = userId;
+        String treatment = treatmentField.getText();
+        String status = cmbStatus.getSelectionModel().getSelectedItem().toString();
+        Appointment appointment = new Appointment(date,physio,diagnosis,treatment,observations,status);
+        String url = ServiceUtils.API_URL + "/records/appointments/" + recordId;
+        AppointmentService.createAppointment(url, appointment).thenApply(response -> {
+            if (response.isOk()) {
+                Platform.runLater(() -> {
+                    MessageUtils.showMessage("Success", "Appointment added");
+                    getAppointment();
+                    cleanForm();
+                });
+            } else {
+                Platform.runLater(() -> {
+                    MessageUtils.showError("Error", "Failed to add appointment");
+                });
+            }
+            return null;
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                MessageUtils.showError("Error", "Failed to add appointment");
+            });
+            return null;
+        });
+    }
+    ///////////////////////////////
+
+    ////////// UPdate Appointments /////////////////////
+    public void updateAppointment(){
+        addBtn.setDisable(false);
+        cmbRecords.setDisable(false);
+        String id = tableViewAppointment.getSelectionModel().getSelectedItem().getId();
+        String date = datePicker.getValue().toString();
+        String diagnosis = diagnosisField.getText();
+        String observations = observationsField.getText();
+        String treatment = treatmentField.getText();
+        String physio = userId;
+        String status = cmbStatus.getSelectionModel().getSelectedItem().toString();
+        Appointment appointment = new Appointment(id,date,physio,diagnosis,treatment,observations,status);
+        String url = ServiceUtils.API_URL + "/records/appointments/" + id;
+        AppointmentService.updateAppointment(url, appointment).thenApply(response -> {
+            if (response.isOk()) {
+                Platform.runLater(() -> {
+                    MessageUtils.showMessage("Success", "Appointment updated");
+                    getAppointment();
+                    cleanForm();
+                });
+            } else {
+                Platform.runLater(() -> {
+                    MessageUtils.showError("Error", "Failed to update appointment");
+                });
+            }
+            return null;
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                MessageUtils.showError("Error", "Failed to update appointment");
+            });
+            return null;
+        });
+    }
+
+    //////////////////////////////////////////////////
+    //////////// delete Appointments ////////////////
+    public void deleteAppointment(Appointment appointment){
+        String url = ServiceUtils.API_URL + "/records/appointments/" + appointment.getId();
+        AppointmentService.deleteAppointment(url)
+                .thenAccept(response -> {
+                    Platform.runLater(() -> {
+                        MessageUtils.showMessage("Success", "Appointment deleted");
+                        getAppointment();
+                        cleanForm();
+                    });
+                }).exceptionally(ex -> {
+                    Platform.runLater(() -> {
+                        MessageUtils.showError("Error", "Failed to delete appointment");
+                    });
+                    return null;
+                });
+    }
+    ////////////////////////////////////////////////
+
     public void getPhysioById(){
         String physioId = userPhysio;
         String url = ServiceUtils.API_URL + "/physios/" + physioId;
@@ -191,6 +316,7 @@ public class PhysioDetailController implements Initializable {
     }
 
 
+
     public void getRecord(){
         String url = ServiceUtils.API_URL + "/records";
         ServiceUtils.getResponseAsync(url,null,"GET")
@@ -209,73 +335,6 @@ public class PhysioDetailController implements Initializable {
                 });
     }
 
-    public void addAppointment(){
-        String recordId = (String) cmbRecords.getSelectionModel().getSelectedItem();
-        String date = String.valueOf(datePicker.getValue());
-        String diagnosis = diagnosisField.getText();
-        String observations = observationsField.getText();
-        String physio = userId;
-        String treatment = treatmentField.getText();
-        String status = (String) cmbStatus.getSelectionModel().getSelectedItem();
-        Appointment appointment = new Appointment(date,physio,diagnosis,treatment,observations,status);
-        String url = ServiceUtils.API_URL + "/records/appointments/" + recordId;
-        String jsonRequest = gson.toJson(appointment);
-        ServiceUtils.getResponseAsync(url,jsonRequest,"POST")
-                .thenApply(json->gson.fromJson(json, RecordResponse.class))
-                .thenAccept(response->{
-                    if(response.isOk()){
-                        Platform.runLater(()->{
-                            MessageUtils.showMessage("Success","Appointment added");
-                            getAppointment();
-                            cleanForm();
-                        });
-                    }else{
-                        Platform.runLater(()->{
-                            MessageUtils.showError("Error",response.getError());
-                        });
-                    }
-                }).exceptionally(ex->{
-                    Platform.runLater(()->{
-                        MessageUtils.showError("Error","Failed to post appointment" );
-                    });
-                    return null;
-                });
-    }
-    public void genericalyGetAppointment(String url){
-        tableViewAppointment.getItems().clear();
-        ServiceUtils.getResponseAsync(url,null,"GET")
-                .thenApply(json-> gson.fromJson(json, AppointmentListResponse.class))
-                .thenAccept(response->{
-                    if(response.isOk()){
-                        Platform.runLater(()-> {
-                            appointments.setAll(response.getAppointments());
-                            //añadir un botton en cada fila
-                            tableViewAppointment.setItems(appointments);
-
-                        });
-                    }
-                }).exceptionally(ex->{
-                    Platform.runLater(()->{
-                        MessageUtils.showError("Error","Failed to post appointment" );
-                    });
-                    return null;
-                });
-    }
-
-
-    public void getAppointment(){
-        tableViewAppointment.getItems().clear();
-        String url ="";
-        System.out.println(userId);
-        System.out.println(Utils.isPhysio);
-        if(Utils.isPhysio){
-            url = ServiceUtils.API_URL + "/records/appointments/physio/" + userId;
-        }else{
-            url = ServiceUtils.API_URL  + "/records/appointmentAdmin";
-        }
-        System.out.println(url);
-        genericalyGetAppointment(url);
-    }
 
     public CompletableFuture<Record> getRecordById(){
         CompletableFuture<Record> future = new CompletableFuture<>();
@@ -307,65 +366,9 @@ public class PhysioDetailController implements Initializable {
     }
 
 
-    public void updateAppointment(){
-        addBtn.setDisable(false);
-        cmbRecords.setDisable(false);
-        String recordId = (String) cmbRecords.getSelectionModel().getSelectedItem();
-        String id = tableViewAppointment.getSelectionModel().getSelectedItem().getId();
-        String date = datePicker.getValue().toString();
-        String diagnosis = diagnosisField.getText();
-        String observations = observationsField.getText();
-        String physio = userId;
-        String treatment = treatmentField.getText();
-        String status = (String) cmbStatus.getSelectionModel().getSelectedItem();
-        Appointment appointment = new Appointment(id,date,physio,diagnosis,treatment,observations,status);
-        String url = ServiceUtils.API_URL + "/records/appointments/" + id;
-        String jsonRequest = gson.toJson(appointment);
-        ServiceUtils.getResponseAsync(url,jsonRequest,"PUT")
-                .thenApply(json->gson.fromJson(json, RecordResponse.class))
-                .thenAccept(response->{
-                    if(response.isOk()){
-                        Platform.runLater(()->{
-                            MessageUtils.showMessage("Success","Appointment updated");
-                            getAppointment();
-                            cleanForm();
-                        });
-                    }else{
-                        Platform.runLater(()->{
-                            MessageUtils.showError("Error",response.getError());
-                        });
-                    }
-                }).exceptionally(ex->{
-                    Platform.runLater(()->{
-                        MessageUtils.showError("Error","Failed to post appointment" );
-                    });
-                    return null;
-                });
-    }
 
-    public void deleteAppointment(Appointment appointment){
-        String url = ServiceUtils.API_URL + "/records/appointments/" + appointment.getId();
-        ServiceUtils.getResponseAsync(url,null,"DELETE")
-                .thenApply(json->gson.fromJson(json, RecordResponse.class))
-                .thenAccept(response->{
-                    if(response.isOk()){
-                        Platform.runLater(()->{
-                            MessageUtils.showMessage("Success","Appointment deleted");
-                            getAppointment();
-                            cleanForm();
-                        });
-                    }else{
-                        Platform.runLater(()->{
-                            MessageUtils.showError("Error",response.getError());
-                        });
-                    }
-                }).exceptionally(ex->{
-                    Platform.runLater(()->{
-                        MessageUtils.showError("Error","Failed to post appointment" );
-                    });
-                    return null;
-                });
-    }
+
+
 
     public void fillFieldsFromAppointment(Appointment appointment){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
