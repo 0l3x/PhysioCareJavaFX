@@ -9,11 +9,10 @@ import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import jdk.jshell.execution.Util;
-import olex.physiocareapifx.model.LoginRequest;
+import olex.physiocareapifx.model.User.LoginRequest;
 import olex.physiocareapifx.utils.*;
 import com.google.gson.Gson;
-import olex.physiocareapifx.model.AuthResponse;
+import olex.physiocareapifx.model.User.AuthResponse;
 import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;

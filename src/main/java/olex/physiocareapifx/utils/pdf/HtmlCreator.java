@@ -1,9 +1,7 @@
 package olex.physiocareapifx.utils.pdf;
 
-import olex.physiocareapifx.model.Patient;
-import olex.physiocareapifx.model.Record;
-
-import java.util.Map;
+import olex.physiocareapifx.model.Patients.Patient;
+import olex.physiocareapifx.model.Records.Record;
 
 public class HtmlCreator {
 

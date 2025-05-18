@@ -1,4 +1,6 @@
-package olex.physiocareapifx.model;
+package olex.physiocareapifx.model.Physios;
+
+import olex.physiocareapifx.model.BaseResponse;
 
 import java.util.List;
 

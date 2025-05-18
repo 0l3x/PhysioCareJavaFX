@@ -1,4 +1,4 @@
-package olex.physiocareapifx.model;
+package olex.physiocareapifx.model.Patients;
 
 import java.util.List;
 

@@ -17,4 +17,14 @@ module olex.physiocareapifx {
     exports olex.physiocareapifx.services;
     exports olex.physiocareapifx.utils;
     exports olex.physiocareapifx.utils.pdf;
+    exports olex.physiocareapifx.model.Appointments;
+    opens olex.physiocareapifx.model.Appointments to com.google.gson;
+    exports olex.physiocareapifx.model.Patients;
+    opens olex.physiocareapifx.model.Patients to com.google.gson;
+    exports olex.physiocareapifx.model.Physios;
+    opens olex.physiocareapifx.model.Physios to com.google.gson;
+    exports olex.physiocareapifx.model.Records;
+    opens olex.physiocareapifx.model.Records to com.google.gson;
+    exports olex.physiocareapifx.model.User;
+    opens olex.physiocareapifx.model.User to com.google.gson;
 }

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import olex.physiocareapifx.model.BaseResponse;
-import olex.physiocareapifx.model.Physio;
+import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.utils.ServiceUtils;
 
 /**

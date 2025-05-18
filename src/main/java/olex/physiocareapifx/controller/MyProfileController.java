@@ -8,14 +8,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import olex.physiocareapifx.model.PhysioListResponse;
-import olex.physiocareapifx.model.PhysioResponse;
+import olex.physiocareapifx.model.Physios.PhysioResponse;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
 import olex.physiocareapifx.utils.Utils;
 
-import java.awt.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 

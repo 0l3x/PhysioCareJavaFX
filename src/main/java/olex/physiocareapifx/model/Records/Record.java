@@ -1,6 +1,7 @@
-package olex.physiocareapifx.model;
+package olex.physiocareapifx.model.Records;
 
 import com.google.gson.annotations.SerializedName;
+import olex.physiocareapifx.model.Appointments.Appointment;
 
 import java.util.List;
 

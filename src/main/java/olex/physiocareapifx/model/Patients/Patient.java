@@ -1,4 +1,4 @@
-package olex.physiocareapifx.model;
+package olex.physiocareapifx.model.Patients;
 
 import com.google.gson.annotations.SerializedName;
 

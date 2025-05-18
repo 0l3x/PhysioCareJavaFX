@@ -2,9 +2,9 @@ package olex.physiocareapifx.utils.pdf;
 
 import com.google.gson.Gson;
 import com.itextpdf.html2pdf.HtmlConverter;
-import olex.physiocareapifx.model.Patient;
-import olex.physiocareapifx.model.Record;
-import olex.physiocareapifx.model.RecordResponse;
+import olex.physiocareapifx.model.Patients.Patient;
+import olex.physiocareapifx.model.Records.Record;
+import olex.physiocareapifx.model.Records.RecordResponse;
 import olex.physiocareapifx.utils.ServiceUtils;
 
 import java.io.File;

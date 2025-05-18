@@ -1,4 +1,4 @@
-package olex.physiocareapifx.model;
+package olex.physiocareapifx.model.User;
 
 public class AuthResponse {
     private String token;

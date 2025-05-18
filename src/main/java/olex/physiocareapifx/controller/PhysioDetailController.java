@@ -10,13 +10,16 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import jdk.jshell.execution.Util;
-import olex.physiocareapifx.model.*;
-import olex.physiocareapifx.model.Record;
+import olex.physiocareapifx.model.Appointments.Appointment;
+import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
+import olex.physiocareapifx.model.Physios.Physio;
+import olex.physiocareapifx.model.Physios.PhysioResponse;
+import olex.physiocareapifx.model.Records.Record;
+import olex.physiocareapifx.model.Records.RecordListResponse;
+import olex.physiocareapifx.model.Records.RecordResponse;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
@@ -163,7 +166,7 @@ public class PhysioDetailController implements Initializable {
 
     public void getPhysioById(){
         String physioId = userPhysio;
-        String url = ServiceUtils.SERVER + "/physios/" + physioId;
+        String url = ServiceUtils.API_URL + "/physios/" + physioId;
         ServiceUtils.getResponseAsync(url,null,"GET")
                 .thenApply(json->gson.fromJson(json, PhysioResponse.class))
                 .thenAccept(response->{
@@ -189,7 +192,7 @@ public class PhysioDetailController implements Initializable {
 
 
     public void getRecord(){
-        String url = ServiceUtils.SERVER + "/records";
+        String url = ServiceUtils.API_URL + "/records";
         ServiceUtils.getResponseAsync(url,null,"GET")
                 .thenApply(json-> gson.fromJson(json, RecordListResponse.class))
                 .thenAccept(response->{
@@ -215,7 +218,7 @@ public class PhysioDetailController implements Initializable {
         String treatment = treatmentField.getText();
         String status = (String) cmbStatus.getSelectionModel().getSelectedItem();
         Appointment appointment = new Appointment(date,physio,diagnosis,treatment,observations,status);
-        String url = ServiceUtils.SERVER + "/records/appointments/" + recordId;
+        String url = ServiceUtils.API_URL + "/records/appointments/" + recordId;
         String jsonRequest = gson.toJson(appointment);
         ServiceUtils.getResponseAsync(url,jsonRequest,"POST")
                 .thenApply(json->gson.fromJson(json, RecordResponse.class))
@@ -266,18 +269,18 @@ public class PhysioDetailController implements Initializable {
         System.out.println(userId);
         System.out.println(Utils.isPhysio);
         if(Utils.isPhysio){
-            url = ServiceUtils.SERVER + "/records/appointments/physio/" + userId;
+            url = ServiceUtils.API_URL + "/records/appointments/physio/" + userId;
         }else{
-            url = ServiceUtils.SERVER  + "/records/appointmentAdmin";
+            url = ServiceUtils.API_URL  + "/records/appointmentAdmin";
         }
         System.out.println(url);
         genericalyGetAppointment(url);
     }
 
-    public CompletableFuture<olex.physiocareapifx.model.Record> getRecordById(){
+    public CompletableFuture<Record> getRecordById(){
         CompletableFuture<Record> future = new CompletableFuture<>();
         String recordId = (String) cmbRecords.getSelectionModel().getSelectedItem();
-        String url = ServiceUtils.SERVER + "/records/" + recordId;
+        String url = ServiceUtils.API_URL + "/records/" + recordId;
         ServiceUtils.getResponseAsync(url,null,"GET")
                 .thenApply(json->gson.fromJson(json, RecordResponse.class))
                 .thenAccept(response->{
@@ -316,7 +319,7 @@ public class PhysioDetailController implements Initializable {
         String treatment = treatmentField.getText();
         String status = (String) cmbStatus.getSelectionModel().getSelectedItem();
         Appointment appointment = new Appointment(id,date,physio,diagnosis,treatment,observations,status);
-        String url = ServiceUtils.SERVER + "/records/appointments/" + id;
+        String url = ServiceUtils.API_URL + "/records/appointments/" + id;
         String jsonRequest = gson.toJson(appointment);
         ServiceUtils.getResponseAsync(url,jsonRequest,"PUT")
                 .thenApply(json->gson.fromJson(json, RecordResponse.class))
@@ -341,7 +344,7 @@ public class PhysioDetailController implements Initializable {
     }
 
     public void deleteAppointment(Appointment appointment){
-        String url = ServiceUtils.SERVER + "/records/appointments/" + appointment.getId();
+        String url = ServiceUtils.API_URL + "/records/appointments/" + appointment.getId();
         ServiceUtils.getResponseAsync(url,null,"DELETE")
                 .thenApply(json->gson.fromJson(json, RecordResponse.class))
                 .thenAccept(response->{
