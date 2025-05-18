@@ -106,9 +106,7 @@ public class ServiceUtils {
             conn.setRequestProperty("Accept-Charset", "UTF-8");
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36");
 
-            // token para testing // PDF Utils 18/05
-            TokenManager.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6ImhlY3RvcjIiLCJyb2wiOiJhZG1pbiIsImlkIjoiNjdmM2ZlMzg5NmI0OWIxODkyYjE4MmQ2IiwiaWF0IjoxNzQ3NTgzNDgzLCJleHAiOjE3NDc1OTA2ODN9._BOA_PwsF0ZqkzRfBQjbK2nRR8dOvEZr_rNk_5C_UZU");
-
+    
             // If set, send the authentication token
             if(TokenManager.getToken() != null) {
                 System.out.println("Token: " + TokenManager.getToken());
