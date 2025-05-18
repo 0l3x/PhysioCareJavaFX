@@ -21,6 +21,7 @@ import olex.physiocareapifx.model.Physios.PhysioResponse;
 import olex.physiocareapifx.model.Records.Record;
 import olex.physiocareapifx.model.Records.RecordListResponse;
 import olex.physiocareapifx.model.Records.RecordResponse;
+import olex.physiocareapifx.services.AppointmentService;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
@@ -203,21 +204,70 @@ public class AppointmentController implements Initializable {
             }
         });
     }
+    //// Get Appointments
 
+    /**
+     * Get all appointments
+     */
     public void getAppointment(){
         tableViewAppointment.getItems().clear();
         String url ="";
         System.out.println(userId);
         System.out.println(Utils.isPhysio);
         if(Utils.isPhysio){
-           url = ServiceUtils.API_URL + "/records/appointments/physio/" + userId;
-       }else{
-           url = ServiceUtils.API_URL  + "/records/appointmentAdmin";
-       }
-       /* System.out.println(url);
-        genericalyGetAppointment(url);*/
-
+            url = ServiceUtils.API_URL + "/records/appointments/physio/" + userId;
+        }else{
+            url = ServiceUtils.API_URL  + "/records/appointmentAdmin";
+        }
+        genericalyGetAppointment(url);
     }
+
+    /**
+     * Get appointentments completed
+     */
+    public void getAppointmentComplete(){
+        tableViewAppointment.getItems().clear();
+        String url = ServiceUtils.API_URL + "/records/appointmentComplete";
+        genericalyGetAppointment(url);
+    }
+
+    /**
+     * Get appointments past or future
+     * @param future true if future, false if past
+     */
+    public void getAppointmentPastOrFuture(Boolean future){
+        tableViewAppointment.getItems().clear();
+        String url ="";
+        System.out.println(userId);
+        System.out.println(Utils.isPhysio);
+        if(future){
+            url = ServiceUtils.API_URL  + "/records/appointmentsFuture";
+        }else{
+            url = ServiceUtils.API_URL + "/records/appointmentsPast";
+        }
+        genericalyGetAppointment(url);
+    }
+
+    /**
+     * Fucntion generic to get appointments by url
+     * @param url url to get appointments
+     */
+    public void genericalyGetAppointment(String url){
+        AppointmentService.getAppointments(url)
+                .thenAccept(appointments -> {
+                    Platform.runLater(() -> {
+                        this.appointments.clear();
+                        this.appointments.addAll(appointments);
+                        tableViewAppointment.setItems(this.appointments);
+                    });
+                }).exceptionally(ex -> {
+                    Platform.runLater(() -> {
+                        MessageUtils.showError("Error", "Failed to get appointments");
+                    });
+                    return null;
+                });
+    }
+////////////////////
 
     public void loadPhysioData() {
         new Thread(() -> {
@@ -237,45 +287,7 @@ public class AppointmentController implements Initializable {
         }).start();
     }
 
-    public void genericalyGetAppointment(String url){
-        tableViewAppointment.getItems().clear();
-        ServiceUtils.getResponseAsync(url,null,"GET")
-                .thenApply(json-> gson.fromJson(json, AppointmentListResponse.class))
-                .thenAccept(response->{
-                    if(response.isOk()){
-                        Platform.runLater(()-> {
-                            appointments.setAll(response.getAppointments());
-                            //añadir un botton en cada fila
-                            tableViewAppointment.setItems(appointments);
 
-                        });
-                    }
-                }).exceptionally(ex->{
-                    Platform.runLater(()->{
-                        MessageUtils.showError("Error","Failed to post appointment" );
-                    });
-                    return null;
-                });
-    }
-
-    public void getAppointmentComplete(){
-        tableViewAppointment.getItems().clear();
-        String url = ServiceUtils.API_URL + "/records/appointmentComplete";
-        genericalyGetAppointment(url);
-    }
-
-    public void getAppointmentPastOrFuture(Boolean future){
-        tableViewAppointment.getItems().clear();
-        String url ="";
-        System.out.println(userId);
-        System.out.println(Utils.isPhysio);
-        if(future){
-            url = ServiceUtils.API_URL  + "/records/appointmentsFuture";
-        }else{
-            url = ServiceUtils.API_URL + "/records/appointmentsPast";
-        }
-        genericalyGetAppointment(url);
-    }
 
     private void loadPhysios() {
         new Thread(() -> {

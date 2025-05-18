@@ -14,29 +14,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class AppointmentService {
 
-    private final Gson gson = new Gson();
-    public CompletableFuture<List<Appointment>> getAppointments(String url) {
-        /*CompletableFuture<List<Appointment>> future = new CompletableFuture<>();
-        ServiceUtils.getResponseAsync(url,null,"GET")
-                .thenApply(json-> gson.fromJson(json, AppointmentListResponse.class))
-                .thenAccept(response->{
-                    if(response.isOk()){
-                        future.complete(response.getAppointments());
-                    }else{
-                        future.complete(new ArrayList<>());
-                    }
-                }).exceptionally(ex->{
-                    ex.printStackTrace();
-                    return null;
-                });
-        while (!future.isDone()) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                System.out.println("Error: " + e.getMessage());
-            }
-        }
-        return future;*/
+    private static final Gson gson = new Gson();
+    public static CompletableFuture<List<Appointment>> getAppointments(String url) {
         return ServiceUtils.getResponseAsync(
                 url,
                 null,

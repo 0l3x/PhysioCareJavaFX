@@ -1,5 +1,9 @@
 package olex.physiocareapifx.utils;
 
+import com.google.gson.Gson;
+import olex.physiocareapifx.model.User.AuthResponse;
+import olex.physiocareapifx.model.User.LoginRequest;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -160,5 +164,23 @@ public class ServiceUtils {
 
     getResponseAsync(String url, String data, String method) {
         return CompletableFuture.supplyAsync(() -> getResponseCompletable(url, data, method));
+    }
+    public static boolean login(String user, String password){
+        try{
+            String credentials = new Gson().toJson(new LoginRequest(user, password));
+            System.out.println(credentials);
+            String jsonResponse = getResponse(API_URL+"/auth/login", credentials,"POST");
+
+            AuthResponse authResponse = new Gson().fromJson(jsonResponse, AuthResponse.class);
+            if(authResponse != null && authResponse.isOk()){
+                TokenManager.setToken(authResponse.getToken());
+                return true;
+
+            }
+            return false;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 }
