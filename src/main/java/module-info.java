@@ -5,7 +5,6 @@ module olex.physiocareapifx {
     requires MaterialFX;
     requires kernel;
     requires layout;
-    requires html2pdf;
 
     opens olex.physiocareapifx to javafx.fxml;
     opens olex.physiocareapifx.controller to javafx.fxml;
