@@ -13,8 +13,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import jdk.jshell.execution.Util;
 import olex.physiocareapifx.model.Appointments.Appointment;
-import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
 import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.model.Physios.PhysioListResponse;
 import olex.physiocareapifx.model.Physios.PhysioResponse;
@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import static olex.physiocareapifx.utils.Utils.userId;
 
@@ -55,9 +56,6 @@ public class AppointmentController implements Initializable {
     public Button addBtn;
     @FXML
     public Button editBtn;
-    @FXML
-    public Button deleteBtn;
-
     @FXML
     public TableColumn<Appointment,String> colDate;
     @FXML
@@ -95,7 +93,7 @@ public class AppointmentController implements Initializable {
         colPhysio.setCellValueFactory(new PropertyValueFactory<>("physio"));
         colTreatment.setCellValueFactory(new PropertyValueFactory<>("treatment"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        TableColumn<Appointment, Void> colAcciones = createDeleteColumn(appointments);
+        TableColumn<Appointment, Void> colAcciones = Utils.createDeleteColumn(appointments,this::deleteAppointment);
         colAcciones.setPrefWidth(100);
         tableViewAppointment.getColumns().add(colAcciones);
         getRecord();
@@ -227,7 +225,7 @@ public class AppointmentController implements Initializable {
      */
     public void getAppointmentComplete(){
         tableViewAppointment.getItems().clear();
-        String url = ServiceUtils.API_URL + "/records/appointmentComplete";
+        String url = ServiceUtils.API_URL + "/records/appointments?filter=completed";
         genericalyGetAppointment(url);
     }
 
@@ -241,9 +239,9 @@ public class AppointmentController implements Initializable {
         System.out.println(userId);
         System.out.println(Utils.isPhysio);
         if(future){
-            url = ServiceUtils.API_URL  + "/records/appointmentsFuture";
+            url = ServiceUtils.API_URL  + "/records/appointments?filter=future";
         }else{
-            url = ServiceUtils.API_URL + "/records/appointmentsPast";
+            url = ServiceUtils.API_URL + "/records/appointments?filter=past";
         }
         genericalyGetAppointment(url);
     }
@@ -258,7 +256,9 @@ public class AppointmentController implements Initializable {
                     Platform.runLater(() -> {
                         this.appointments.clear();
                         this.appointments.addAll(appointments);
+                        //set iteme for itemt table
                         tableViewAppointment.setItems(this.appointments);
+
                     });
                 }).exceptionally(ex -> {
                     Platform.runLater(() -> {
@@ -472,25 +472,6 @@ public class AppointmentController implements Initializable {
         cmbStatus.getSelectionModel().select("pending");
         cmbRecords.getSelectionModel().select(-1);
     }
-    private <T> TableColumn<T, Void> createDeleteColumn(ObservableList<T> items) {
-        TableColumn<T, Void> colAcciones = new TableColumn<>("Acciones");
-        colAcciones.setCellFactory((Callback<TableColumn<T, Void>, TableCell<T, Void>>) column ->
-                new TableCell<>() {
-                    private final Button btn = new Button("Delete");
-                    {
-                        btn.setOnAction(e -> {
-                            Appointment item = (Appointment) getTableView().getItems().get(getIndex());
-                            System.out.println("Item to delete: " + item);
-                            deleteAppointment(item);
-                        });
-                    }
-                    @Override protected void updateItem(Void v, boolean empty) {
-                        super.updateItem(v, empty);
-                        setGraphic(empty ? null : btn);
-                    }
-                }
-        );
-        return colAcciones;
-    }
+
 }
 

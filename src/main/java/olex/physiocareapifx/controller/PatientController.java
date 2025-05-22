@@ -1,6 +1,8 @@
 package olex.physiocareapifx.controller;
 
 import com.google.gson.Gson;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -9,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.Patients.Patient;
 import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Patients.PatientResponse;
@@ -18,6 +21,7 @@ import olex.physiocareapifx.services.RecordService;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
+import olex.physiocareapifx.utils.Utils;
 import olex.physiocareapifx.utils.pdf.PdfUtils;
 
 import java.io.IOException;
@@ -41,6 +45,7 @@ public class PatientController {
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
     @FXML private Button exitBtn;
+    public ObservableList<Patient> patients = FXCollections.observableArrayList();
 
     @FXML private TableView<Patient> tableViewPatient;
     @FXML private TableColumn<Patient, String> colName;

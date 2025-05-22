@@ -2,6 +2,11 @@ package olex.physiocareapifx.services;
 
 import com.google.gson.Gson;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.util.Callback;
 import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
 import olex.physiocareapifx.model.Appointments.AppointmentResponse;
@@ -12,6 +17,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class AppointmentService {
 
@@ -49,4 +55,6 @@ public class AppointmentService {
                 "DELETE"
         ).thenApply(__->null);
     }
+
+
 }

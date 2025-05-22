@@ -1,6 +1,7 @@
 package olex.physiocareapifx.model.Appointments;
 
 import com.google.gson.annotations.SerializedName;
+import olex.physiocareapifx.model.Physios.Physio;
 
 public class Appointment {
     @SerializedName("_id")

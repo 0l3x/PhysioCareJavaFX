@@ -14,7 +14,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import olex.physiocareapifx.model.Appointments.Appointment;
-import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
 import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.model.Physios.PhysioResponse;
@@ -73,6 +72,8 @@ public class PhysioDetailController implements Initializable {
     public ObservableList<Appointment> appointments = FXCollections.observableArrayList();
     public TextField txtSurname;
     public Physio physio = new Physio();
+    String imageBase64 = "";
+    Boolean isModify = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -89,6 +90,8 @@ public class PhysioDetailController implements Initializable {
                 try {
                     String base64Image = Utils.encodeImageToBase64(imagePath);
                     System.out.println("Imagen en Base64: " + base64Image);
+                    imageBase64 = base64Image;
+                    isModify = true;
                     MessageUtils.showMessage("Imagen codificada","Accept to encode image to base64");
                 } catch (IOException e) {
                     MessageUtils.showError("Error", "Failed to encode image to Base64");
@@ -114,11 +117,11 @@ public class PhysioDetailController implements Initializable {
         colPhysio.setCellValueFactory(new PropertyValueFactory<>("physio"));
         colTreatment.setCellValueFactory(new PropertyValueFactory<>("treatment"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        TableColumn<Appointment, Void> colAcciones = createDeleteColumn(appointments);
+        TableColumn<Appointment, Void> colAcciones = Utils.createDeleteColumn(appointments,this::deleteAppointment);
         colAcciones.setPrefWidth(100);
         tableViewAppointment.getColumns().add(colAcciones);
         getAppointment();
-       // getRecord();
+        getRecord();
 
         ContextMenu contextMenu = new ContextMenu();
         addBtn.setOnAction(e->addAppointment());
@@ -130,6 +133,7 @@ public class PhysioDetailController implements Initializable {
                 cmbRecords.setDisable(true);
             }
         });
+        btnEdit.setOnAction(e->updatePhysio());
         btnClean.setOnAction(e->{
             cleanForm();
         });
@@ -148,7 +152,7 @@ public class PhysioDetailController implements Initializable {
                         contextMenu.getItems().clear();
                         contextMenu.getItems().addAll(
                                 new MenuItem("Record ID: " + record.get().getId()),
-                                new MenuItem("Patient: " + record.get().getPatient()),
+                                new MenuItem("Patient: " + record.get().getPatient().getName()),
                                 new MenuItem("Medical Record: " + record.get().getMedicalRecord())
                         );
                         contextMenu.show(cmbRecords, Side.BOTTOM, 0,0);
@@ -289,6 +293,50 @@ public class PhysioDetailController implements Initializable {
     }
     ////////////////////////////////////////////////
 
+    private void updatePhysio() {
+        Physio selected = null;
+        if(isModify){
+            selected= new Physio(userPhysio,
+                    txtName.getText(),
+                    txtSurname.getText(),
+                    cmbSpecialty.getSelectionModel().getSelectedItem(),
+                    txtLicenseNumber.getText(),
+                    txtEmail.getText(),
+                    imageBase64
+            );
+        }else{
+            selected = new Physio(userPhysio,
+                    txtName.getText(),
+                    txtSurname.getText(),
+                    cmbSpecialty.getSelectionModel().getSelectedItem(),
+                    txtLicenseNumber.getText(),
+                    txtEmail.getText(),
+                    physio.getAvatar()
+            );
+        }
+        if (selected == null) {
+            MessageUtils.showError("Error", "Selecciona un fisio para editar.");
+            return;
+        }
+        PhysioService service = new PhysioService();
+        service.configureFor(PhysioService.Method.PUT, selected);
+        service.start();
+
+        service.setOnSucceeded(e -> {
+            BaseResponse response = service.getValue();
+            if (response.isOk()) {
+                Platform.runLater(() -> {
+                    MessageUtils.showMessage("Success", "Physio updated");
+                    getPhysioById();
+                });
+            } else {
+                MessageUtils.showError("Error", response.getError());
+            }
+        });
+
+        service.setOnFailed(e -> MessageUtils.showError("Error", "Fallo al actualizar el fisio."));
+    }
+
     public void getPhysioById(){
         String physioId = userPhysio;
         String url = ServiceUtils.API_URL + "/physios/" + physioId;
@@ -297,6 +345,7 @@ public class PhysioDetailController implements Initializable {
                 .thenAccept(response->{
                     if(response.isOk()){
                         Platform.runLater(()->{
+                            System.out.println(response);
                             txtName.setText(response.getPhysio().getName());
                             txtLicenseNumber.setText(response.getPhysio().getLicenseNumber());
                             txtEmail.setText(response.getPhysio().getEmail());
@@ -389,26 +438,5 @@ public class PhysioDetailController implements Initializable {
         observationsField.clear();
         cmbStatus.getSelectionModel().select("pending");
         cmbRecords.getSelectionModel().select(-1);
-    }
-
-    private <T> TableColumn<T, Void> createDeleteColumn(ObservableList<T> items) {
-        TableColumn<T, Void> colAcciones = new TableColumn<>("Acciones");
-        colAcciones.setCellFactory((Callback<TableColumn<T, Void>, TableCell<T, Void>>) column ->
-                new TableCell<>() {
-                    private final Button btn = new Button("Delete");
-                    {
-                        btn.setOnAction(e -> {
-                            Appointment item = (Appointment) getTableView().getItems().get(getIndex());
-                            System.out.println("Item to delete: " + item);
-                            deleteAppointment(item);
-                        });
-                    }
-                    @Override protected void updateItem(Void v, boolean empty) {
-                        super.updateItem(v, empty);
-                        setGraphic(empty ? null : btn);
-                    }
-                }
-        );
-        return colAcciones;
     }
 }
