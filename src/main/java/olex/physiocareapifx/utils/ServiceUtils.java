@@ -109,6 +109,7 @@ public class ServiceUtils {
             // token para testing // PDF Utils 18/05
            // TokenManager.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6ImhlY3RvcjIiLCJyb2wiOiJhZG1pbiIsImlkIjoiNjdmM2ZlMzg5NmI0OWIxODkyYjE4MmQ2IiwiaWF0IjoxNzQ3NTgzNDgzLCJleHAiOjE3NDc1OTA2ODN9._BOA_PwsF0ZqkzRfBQjbK2nRR8dOvEZr_rNk_5C_UZU");
 
+
             // If set, send the authentication token
             if(TokenManager.getToken() != null) {
                 System.out.println("Token: " + TokenManager.getToken());
