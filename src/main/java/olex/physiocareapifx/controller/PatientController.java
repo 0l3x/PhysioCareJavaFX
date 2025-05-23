@@ -3,6 +3,7 @@ package olex.physiocareapifx.controller;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.ScheduledService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -15,18 +16,20 @@ import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.Patients.Patient;
 import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Patients.PatientResponse;
+import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.services.PatientService;
 import olex.physiocareapifx.services.PatientService.Method;
 import olex.physiocareapifx.services.RecordService;
-import olex.physiocareapifx.utils.MessageUtils;
-import olex.physiocareapifx.utils.SceneLoader;
-import olex.physiocareapifx.utils.ServiceUtils;
-import olex.physiocareapifx.utils.Utils;
+import olex.physiocareapifx.utils.*;
 import olex.physiocareapifx.utils.pdf.PdfUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Controller for the patient management view.
@@ -54,7 +57,7 @@ public class PatientController {
     @FXML private TableColumn<Patient, String> colAddress;
     @FXML private TableColumn<Patient, String> colInsurance;
     @FXML private TableColumn<Patient, String> colEmail;
-
+    private ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final Gson gson = new Gson();
 
     /**
@@ -69,21 +72,24 @@ public class PatientController {
         colInsurance.setCellValueFactory(new PropertyValueFactory<>("insuranceNumber"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         loadPatients();
-
+        TableColumn<Patient, Void> colAcciones = Utils.createDeleteColumn(patients,this::deletePatient);
+        colAcciones.setPrefWidth(100);
+        tableViewPatient.getColumns().add(colAcciones);
         addBtn.setOnAction(e -> addPatient());
         editBtn.setOnAction(e -> updatePatient());
-        deleteBtn.setOnAction(e -> deletePatient());
+        //deleteBtn.setOnAction(e -> deletePatient());
         exitBtn.setOnAction(actionEvent -> {
             try {
+                executorService.shutdown();
                 SceneLoader.loadScreen("menu.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
-
         tableViewPatient.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) fillFieldsFromPatient(newVal);
         });
+
     }
 
     /**
@@ -98,6 +104,9 @@ public class PatientController {
                     javafx.application.Platform.runLater(() ->
                             tableViewPatient.getItems().setAll(response.getResultado())
                     );
+
+                    startSendEmails(response.getResultado());
+                    //Email.sendPatientsEmails(response.getResultado());
                 } else {
                     MessageUtils.showError("Error", "No se pudo cargar la lista de pacientes");
                 }
@@ -105,6 +114,17 @@ public class PatientController {
                 MessageUtils.showError("Error", e.getMessage());
             }
         }).start();
+    }
+
+    private void startSendEmails(List<Patient> patients2) {
+        executorService.scheduleAtFixedRate(
+                () -> {
+                   Email.sendPatientsEmails(patients2);
+                },
+                0,
+                1,
+                TimeUnit.HOURS
+        );
     }
 
     /**
@@ -139,10 +159,10 @@ public class PatientController {
             MessageUtils.showError("Error", "Selecciona un paciente para editar.");
             return;
         }
-
+        System.out.println("Selected patient: " + selected.getId());
         Patient updated = getPatientFromFields();
         updated.setId(selected.getId());
-
+        System.out.println("Updated patient: " + updated.getId());
         if (updated.equals(selected)) {
             MessageUtils.showMessage("Aviso", "No se han hecho cambios.");
             return;
@@ -168,8 +188,7 @@ public class PatientController {
     /**
      * Deletes the selected patient.
      */
-    private void deletePatient() {
-        Patient selected = tableViewPatient.getSelectionModel().getSelectedItem();
+    private void deletePatient(Patient selected) {
         if (selected == null) {
             MessageUtils.showError("Error", "Selecciona un paciente para eliminar.");
             return;

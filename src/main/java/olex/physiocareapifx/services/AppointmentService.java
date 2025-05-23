@@ -31,6 +31,15 @@ public class AppointmentService {
             json-> gson.fromJson(json, AppointmentListResponse.class).getAppointments());
     }
 
+    public static CompletableFuture<Appointment> getAppointment(String url) {
+        return ServiceUtils.getResponseAsync(
+                url,
+                null,
+                "GET"
+        ).thenApply(
+                json-> gson.fromJson(json, AppointmentResponse.class).getAppointment());
+    }
+
     public static CompletableFuture<AppointmentResponse> createAppointment(String url, Appointment appointment){
         return ServiceUtils.getResponseAsync(
                 url,
