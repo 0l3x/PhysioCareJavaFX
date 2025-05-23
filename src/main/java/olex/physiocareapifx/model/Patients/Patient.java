@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.itextpdf.kernel.pdf.PdfArray;
 import olex.physiocareapifx.model.Appointments.Appointment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -95,7 +96,11 @@ public class Patient {
     }
 
     public List<Appointment> getAppointments() {
-        return appointments;
+        if(appointments == null) {
+            return new ArrayList<>();
+        }else{
+            return appointments;
+        }
     }
 
     public void setAppointments(List<Appointment> appointments) {

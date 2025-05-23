@@ -1,13 +1,18 @@
 package olex.physiocareapifx.controller;
 
 import com.google.gson.Gson;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.BaseResponse;
+import olex.physiocareapifx.model.Patients.Patient;
 import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.model.Physios.PhysioListResponse;
 import olex.physiocareapifx.services.PhysioService;
@@ -18,6 +23,7 @@ import olex.physiocareapifx.utils.ServiceUtils;
 import olex.physiocareapifx.utils.Utils;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Controller for managing physiotherapists in the application.
@@ -35,6 +41,7 @@ public class PhysiosController {
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
     @FXML private Button exitBtn;
+    public ObservableList<Physio> physios = FXCollections.observableArrayList();
 
     @FXML private TableView<Physio> tableViewPhysio;
     @FXML private TableColumn<Physio, String> colName;
@@ -59,10 +66,12 @@ public class PhysiosController {
         specialtyCombo.getItems().addAll("Sports", "Neurological", "Pediatric", "Geriatric", "Oncological");
 
         loadPhysios();
-
+        TableColumn<Physio, Void> colAcciones = Utils.createDeleteColumn(physios,this::deletePhysio);
+        colAcciones.setPrefWidth(100);
+        tableViewPhysio.getColumns().add(colAcciones);
         addBtn.setOnAction(e -> addPhysio());
         editBtn.setOnAction(e -> updatePhysio());
-        deleteBtn.setOnAction(e -> deletePhysio());
+        //deleteBtn.setOnAction(e -> deletePhysio(tableViewPhysio.getSelectionModel().getSelectedItem()));
         exitBtn.setOnAction(actionEvent -> {
             try {
                 SceneLoader.loadScreen("menu.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
@@ -85,8 +94,10 @@ public class PhysiosController {
                 String json = ServiceUtils.getResponse(ServiceUtils.API_URL + "/physios", null, "GET");
                 PhysioListResponse response = gson.fromJson(json, PhysioListResponse.class);
                 if (response.isOk()) {
-                    javafx.application.Platform.runLater(() ->
-                            tableViewPhysio.getItems().setAll(response.getPhysios())
+                    Platform.runLater(() -> {
+                                physios.setAll(response.getPhysios());
+                                tableViewPhysio.getItems().setAll(response.getPhysios());
+                            }
                     );
                 } else {
                     MessageUtils.showError("Error", "No se pudo cargar la lista de fisioterapeutas");
@@ -158,8 +169,7 @@ public class PhysiosController {
     /**
      * Deletes the selected physio from the database.
      */
-    private void deletePhysio() {
-        Physio selected = tableViewPhysio.getSelectionModel().getSelectedItem();
+    private void deletePhysio(Physio selected) {
         if (selected == null) {
             MessageUtils.showError("Error", "Selecciona un fisio para eliminar.");
             return;
