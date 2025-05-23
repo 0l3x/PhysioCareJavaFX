@@ -3,10 +3,9 @@ package olex.physiocareapifx.services;
 import com.google.gson.Gson;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
 import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Patients.Patient;
-import olex.physiocareapifx.model.Patients.PatientResponse;
-import olex.physiocareapifx.model.Records.RecordResponse;
 import olex.physiocareapifx.utils.ServiceUtils;
 
 import java.util.concurrent.CompletableFuture;
@@ -19,6 +18,22 @@ public class PatientService extends Service<BaseResponse> {
     private static final Gson gson = new Gson();
 
     // para PDFS
+    public static CompletableFuture<Patient> getAppointmentsOfPatientById(String id) {
+        return ServiceUtils.getResponseAsync(
+                ServiceUtils.API_URL + "/records/appointments/patients/" + id,
+                null,
+                "GET"
+        ).thenApply(response -> {
+            System.out.println("Response JSON: " + response);
+
+            AppointmentListResponse appointmentListResponse = gson.fromJson(response, AppointmentListResponse.class);
+
+            Patient patient = new Patient();
+            patient.setAppointments(appointmentListResponse.getAppointments()); // Asignamos las citas obtenidas
+
+            return patient;
+        });
+    }
 
 
     /**

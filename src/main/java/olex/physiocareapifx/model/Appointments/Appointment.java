@@ -13,6 +13,8 @@ public class Appointment {
     private String treatment;
     private String observations;
     private String status;
+    @SerializedName("patient")
+    private String patientId;
 
     public Appointment(String date, String physio, String diagnosis, String treatment, String observations,String status) {
         this.date = date;

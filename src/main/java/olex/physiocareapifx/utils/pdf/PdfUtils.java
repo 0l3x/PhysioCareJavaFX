@@ -10,8 +10,10 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
+import olex.physiocareapifx.model.Appointments.Appointment;
+import olex.physiocareapifx.model.Patients.Patient;
 import olex.physiocareapifx.model.Records.Record;
-import olex.physiocareapifx.services.RecordService;
+import olex.physiocareapifx.services.PatientService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,15 +26,38 @@ public class PdfUtils {
             .setMarginBottom(20);
 
     public static void main(String[] args) {
-        System.out.println("Creating PDF de record...");
-        RecordService.getRecordById("67f3fe3996b49b1892b182f0")
-                .thenAccept(record ->{
-                    if(record.isOk()) {
+//        System.out.println("Creating PDF de record...");
+//        RecordService.getRecordById("67f3fe3996b49b1892b182f0")
+//                .thenAccept(record ->{
+//                    if(record.isOk()) {
+//                        System.out.println("PDF created");
+//                        System.out.println("Record ID: " + record.getRecord().getId());
+//                        createMedicalRecordPdf(record.getRecord());
+//                    }else{
+//                        System.out.println("Error: " + record.getError());
+//                    }
+//                }).exceptionally(e -> {
+//                    System.out.println("Error: " + e.getMessage());
+//                    return null;
+//                });
+//        while (true) {
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+
+        System.out.println("Creating PDF de patient...");
+        PatientService.getAppointmentsOfPatientById("67f3fe3996b49b1892b182dc")
+                .thenAccept(patient ->{
+                    if(patient != null) {
+                        //System.out.println("Record ID: " + patient.getPatient().getId());
+                        getPatientAppointmentsPdf(patient);
                         System.out.println("PDF created");
-                        System.out.println("Record ID: " + record.getRecord().getId());
-                        createMedicalRecordPdf(record.getRecord());
+                        //createMedicalRecordPdf(record.getPatient());
                     }else{
-                        System.out.println("Error: " + record.getError());
+                        System.out.println("Error: " + "Patient not found");
                     }
                 }).exceptionally(e -> {
                     System.out.println("Error: " + e.getMessage());
@@ -105,6 +130,74 @@ public class PdfUtils {
         }catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());
         }
+    }
+
+    public static File getPatientAppointmentsPdf(Patient patient){
+        String dest = "resources/patients/" + patient.getInsuranceNumber() + ".pdf";
+        File newPdf = null;
+        Document document;
+
+        // Verificar si el paciente tiene citas
+        if (patient.getAppointments() == null || patient.getAppointments().isEmpty()) {
+            System.out.println("No appointments found for patient: " + patient.getFullName());
+        }
+
+        try{
+            PdfWriter writer = new PdfWriter(dest);
+            PdfDocument pdf = new PdfDocument(writer);
+            document = new Document(pdf);
+
+            document.add(header);
+
+            // Title
+            Paragraph title = new Paragraph(patient.getFullName())
+                    .setFontSize(20)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginBottom(20);
+            document.add(title);
+
+
+            // Available Appointments
+            Paragraph availableAppointments = new Paragraph("Available Appointments: " + (10 - patient.getAppointments().size()))
+                    .setFontSize(14)
+                    .setItalic()
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginBottom(20);
+            document.add(availableAppointments);
+
+            // Table with patient info
+            float[] colWidths = {1, 1, 1, 2, 1};
+            Table appointmentsTable = new Table(UnitValue.createPercentArray(colWidths));
+            appointmentsTable.setWidth(UnitValue.createPercentValue(100));
+            appointmentsTable.addHeaderCell(getHeaderCell("Date"));
+            appointmentsTable.addHeaderCell(getHeaderCell("Diagnosis"));
+            appointmentsTable.addHeaderCell(getHeaderCell("Treatment"));
+            appointmentsTable.addHeaderCell(getHeaderCell("Observations"));
+            appointmentsTable.addHeaderCell(getHeaderCell("Physio"));
+
+            System.out.println(patient.getAppointments().size());
+            for (Appointment a: patient.getAppointments()) {
+                if (a.getStatus().equals("completed")) {
+                    appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDate().isBlank() ? a.getDate() : "Empty Date")).setFontSize(9));
+                    appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDiagnosis().isBlank() ? a.getDiagnosis() : "Empty Diagnosis")).setFontSize(9));
+                    appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getTreatment().isBlank() ? a.getTreatment() : "Empty Treatment")).setFontSize(9));
+                    appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getObservations().isBlank() ? a.getObservations() : "Empty Observations")).setFontSize(9));
+                    //appointmentsTable.addCell(new Cell().add(new Paragraph(a.getPhysio().getFullName())).setFontSize(9));
+                }
+            }
+
+            document.add(appointmentsTable);
+
+            document.close();
+            System.out.println("Patient appointments PDF created successfully.");
+
+            newPdf = new File(dest);
+
+        }catch (FileNotFoundException e) {
+            System.out.println("File not found: " + e.getMessage());
+        }
+        return newPdf;
     }
 
     private static Cell getHeaderCell(String text) {
