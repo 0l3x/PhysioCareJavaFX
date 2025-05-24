@@ -43,7 +43,7 @@ public class Email {
     private static final String CREDENTIALS_FILE_PATH = "src/main/java/resources2/client_secret_45202089257-469ej7fbq4thf57ak66duqbhma638t31.apps.googleusercontent.com.json";
 
     public static void sendPatientsEmails(List<Patient> patients) {
-        System.out.println("Sending emails to patients..."+patients.size());
+        System.out.println("Sending emails to patients..." + patients.size());
         patients.stream().forEach(p -> {
             CompletableFuture<List<Appointment>> future = AppointmentService.getAppointments(ServiceUtils.API_URL  +"/records/appointments/patients/" + p.getId());
             while (!future.isDone()) {

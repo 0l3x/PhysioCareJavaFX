@@ -1,6 +1,10 @@
 package olex.physiocareapifx.model.Physios;
 
 import com.google.gson.annotations.SerializedName;
+import olex.physiocareapifx.model.Appointments.Appointment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Physio {
     @SerializedName("_id")
@@ -11,6 +15,7 @@ public class Physio {
     private String licenseNumber;
     private String email;
     private String avatar;
+    private List<Appointment> appointments;
 
     // Constructor vacío, constructor completo, getters y setters
     public Physio() {
@@ -79,5 +84,21 @@ public class Physio {
     }
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public List<Appointment> getAppointments() {
+        if(appointments == null) {
+            return new ArrayList<>();
+        }else{
+            return appointments;
+        }
+    }
+
+    public void setAppointments(List<Appointment> appointments) {
+        this.appointments = appointments;
+    }
+
+    public String getFullName() {
+        return name + " " + surname;
     }
 }

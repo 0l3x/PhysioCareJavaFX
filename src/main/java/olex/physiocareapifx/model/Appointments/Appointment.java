@@ -124,4 +124,8 @@ public class Appointment {
                 ", observations='" + observations + '\'' +
                 '}';
     }
+
+    public String getPatientId() {
+        return patientId;
+    }
 }

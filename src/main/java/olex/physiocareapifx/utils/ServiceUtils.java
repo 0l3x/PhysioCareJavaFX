@@ -20,7 +20,7 @@ public class ServiceUtils {
      * Base URL of the API. Can be changed to point to different environments (e.g., localhost, VPS).
      */
     //public static final String API_URL = "http://olexanderg.net:8080";
-    public static final String API_URL = "https://hectorrp.com/api";
+    public static final String API_URL = "https://hectorrp.com:8080/api";
     /**
      * Sends an HTTP request to the specified URL with the given data and method,
      * and returns the response as a String.
@@ -107,7 +107,7 @@ public class ServiceUtils {
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36");
 
             // token para testing // PDF Utils 18/05
-           //TokenManager.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6ImhlY3RvcjIiLCJyb2wiOiJhZG1pbiIsImlkIjoiNjdmM2ZlMzg5NmI0OWIxODkyYjE4MmQ2IiwiaWF0IjoxNzQ4MDA4MjQ4LCJleHAiOjE3NDgwMTU0NDh9.DkKDpVKhnajjhIr9VSs--xXwqw0M0PfBHOjtwy62GvU");
+           TokenManager.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6ImhlY3RvcjIiLCJyb2wiOiJhZG1pbiIsImlkIjoiNjdmM2ZlMzg5NmI0OWIxODkyYjE4MmQ2IiwiaWF0IjoxNzQ4MDk4Nzk4LCJleHAiOjE3NDgxMDU5OTh9.M5Eo9uxD8zozQTdPnFfyB5qN00R9CmyszW9mjBFJpcE");
 
 
             // If set, send the authentication token
