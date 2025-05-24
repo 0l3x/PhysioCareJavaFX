@@ -1,21 +1,12 @@
 package olex.physiocareapifx.model.Patients;
 
-import java.util.List;
+import olex.physiocareapifx.model.BaseResponse;
+import olex.physiocareapifx.model.Physios.Physio;
 
-public class PatientResponse {
-    private boolean ok;
-    private List<Patient> resultado;
-    private String error;
+public class PatientResponse extends BaseResponse {
+        private Patient resultado;
 
-    public boolean isOk() {
-        return ok;
-    }
-
-    public List<Patient> getResultado() {
-        return resultado;
-    }
-
-    public String getError() {
-        return error;
-    }
+        public Patient getPatient() {
+            return resultado;
+        }
 }

@@ -3,25 +3,18 @@ package olex.physiocareapifx.controller;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.ScheduledService;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.Patients.Patient;
 import olex.physiocareapifx.model.BaseResponse;
-import olex.physiocareapifx.model.Patients.PatientResponse;
-import olex.physiocareapifx.model.Physios.Physio;
+import olex.physiocareapifx.model.Patients.PatientListResponse;
 import olex.physiocareapifx.services.PatientService;
 import olex.physiocareapifx.services.PatientService.Method;
-import olex.physiocareapifx.services.RecordService;
 import olex.physiocareapifx.utils.*;
-import olex.physiocareapifx.utils.pdf.PdfUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -37,6 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class PatientController {
 
+    public PasswordField lbl_password;
     @FXML private TextField nameField;
     @FXML private TextField surnameField;
     @FXML private TextField birthdateField;
@@ -98,7 +92,7 @@ public class PatientController {
         new Thread(() -> {
             try {
                 String json = ServiceUtils.getResponse(ServiceUtils.API_URL + "/patients", null, "GET");
-                PatientResponse response = gson.fromJson(json, PatientResponse.class);
+                PatientListResponse response = gson.fromJson(json, PatientListResponse.class);
                 if (response.isOk()) {
                     javafx.application.Platform.runLater(() ->
                             tableViewPatient.getItems().setAll(response.getResultado())
@@ -227,6 +221,7 @@ public class PatientController {
         String address = addressField != null ? addressField.getText().trim() : "";
         String insurance = insuranceNumberField != null ? insuranceNumberField.getText().trim() : "";
         String email = emailField != null && emailField.getText() != null ? emailField.getText().trim() : "";
+        String password = lbl_password != null ? lbl_password.getText().trim() : "";
 
         // Validaciones
         if (name.isEmpty() || name.length() < 2 || name.length() > 50) {
@@ -236,6 +231,10 @@ public class PatientController {
 
         if (surname.isEmpty() || surname.length() < 2 || surname.length() > 50) {
             MessageUtils.showError("Error", "El apellido debe tener entre 2 y 50 caracteres.");
+            return null;
+        }
+        if( password.isEmpty() || password.length() < 6 || password.length() > 20) {
+            MessageUtils.showError("Error", "La contraseña debe tener entre 6 y 20 caracteres.");
             return null;
         }
 
@@ -268,7 +267,7 @@ public class PatientController {
 
         String birthDateStr = birthDate.toString(); // Formato: "2001-03-15"
 
-        return new Patient(null, name, surname, birthDateStr, address, insurance, email);
+        return new Patient(null, name, surname, birthDateStr, address, insurance, email,password);
     }
 
     /**
@@ -302,16 +301,15 @@ public class PatientController {
         tableViewPatient.getSelectionModel().clearSelection();
     }
 
-    /**
-     * Navigates back to the main menu view.
-     */
-    private void goBackToMenu() {
-        try {
-            Stage stage = (Stage) exitBtn.getScene().getWindow();
-            Parent root = FXMLLoader.load(getClass().getResource("/olex/physiocareapifx/menu.fxml"));
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            MessageUtils.showError("Error", "No se pudo volver al menú.");
+
+    public void doubleClick(MouseEvent mouseEvent) {
+        if (mouseEvent.getClickCount() == 2) {
+            try{
+                Utils.userPhysio = tableViewPatient.getSelectionModel().getSelectedItem().getId();
+                SceneLoader.loadScreen("patient-detail-view.fxml",(Stage) ((Node) mouseEvent.getSource()).getScene().getWindow());
+            }catch (Exception e){
+                MessageUtils.showError("Error", "Fallo al cargar el fisio.");
+            }
         }
     }
 }

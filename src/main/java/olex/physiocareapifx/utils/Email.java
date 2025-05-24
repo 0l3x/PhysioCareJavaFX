@@ -69,8 +69,6 @@ public class Email {
                         .size() >= 8
                 ).forEach(Email::sendPatientEmail);
         System.out.println("Sending emails to patients...");
-       // System.out.println("Patients: " + patients.size());
-        // patients.forEach(Email::sendPatientEmail);
     }
 
     public static void sendPatientEmail(Patient patient) {
@@ -126,14 +124,12 @@ public class Email {
        System.out.println("Physio email: " + physio.getEmail());
         try {
 
-            // Build a new authorized API client service.
             final NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
             Gmail service = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY,
                     getCredentials(HTTP_TRANSPORT))
                     .setApplicationName(APPLICATION_NAME)
                     .build();
 
-            // Define the email parameters
             String user = "me";
             System.out.println(physio.getEmail());
            /* MimeMessage emailContent= createEmailWithAttachment(
@@ -161,7 +157,6 @@ public class Email {
                             "Kind regards,\n\n"
                    );
 
-            // Send the email
             sendMessage(service, user, emailContent);
         } catch (Exception e) {
             System.out.println("Error sending physio email");
@@ -170,12 +165,10 @@ public class Email {
 
     public static Credential getCredentials(
             final NetHttpTransport HTTP_TRANSPORT) throws Exception {
-        // Load client secrets.
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(JSON_FACTORY,
                         new InputStreamReader(
                                 new FileInputStream(CREDENTIALS_FILE_PATH)));
-        // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow =
                 new GoogleAuthorizationCodeFlow.Builder(
                         HTTP_TRANSPORT, JSON_FACTORY, clientSecrets,
@@ -197,17 +190,14 @@ public class Email {
         email.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(to));
         email.setSubject(subject);
 
-        // Create email body
         MimeBodyPart textPart = new MimeBodyPart();
         textPart.setText(bodyText, "utf-8");
 
-        // Attach archivo
         MimeBodyPart attachmentPart = new MimeBodyPart();
         attachmentPart.setDataHandler(new jakarta.activation.DataHandler(
                 new jakarta.activation.FileDataSource(fileDir)));
         attachmentPart.setFileName(new java.io.File(fileDir).getName());
 
-        // Create MIME structure
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(textPart);
         multipart.addBodyPart(attachmentPart);
@@ -225,12 +215,10 @@ public class Email {
         email.addRecipient(MimeMessage.RecipientType.TO, new InternetAddress(to));
         email.setSubject(subject);
 
-        // Create email body
         MimeBodyPart textPart = new MimeBodyPart();
         textPart.setText(bodyText, "utf-8");
 
 
-        // Create MIME structure
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(textPart);
 

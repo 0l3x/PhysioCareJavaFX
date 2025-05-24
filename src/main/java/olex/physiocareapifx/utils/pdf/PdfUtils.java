@@ -12,14 +12,11 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.Patients.Patient;
-import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.model.Records.Record;
 import olex.physiocareapifx.services.PatientService;
-import olex.physiocareapifx.services.PhysioService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class PdfUtils {
@@ -28,6 +25,14 @@ public class PdfUtils {
             .setItalic()
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(20);
+
+    private static Cell HeaderTop(String text) {
+        return new Cell().add(new Paragraph(text))
+                .setBackgroundColor(ColorConstants.GREEN)
+                .setBold()
+                .setBorder(new SolidBorder(ColorConstants.DARK_GRAY, 1))
+                .setTextAlignment(TextAlignment.LEFT);
+    }
 
     public static void main(String[] args) {
 //        System.out.println("Creating PDF de record...");
@@ -94,13 +99,13 @@ public class PdfUtils {
             float[] colWidths = {2, 4};
             Table recordInfo = new Table(UnitValue.createPercentArray(colWidths));
             recordInfo.setWidth(UnitValue.createPercentValue(100));
-            recordInfo.addCell(getHeaderCell("Record ID"));
+            recordInfo.addCell(HeaderTop("Record ID"));
             recordInfo.addCell(String.valueOf(record.getId()));
-            recordInfo.addCell(getHeaderCell("Patient's Insurance Number"));
+            recordInfo.addCell(HeaderTop("Patient's Insurance Number"));
             recordInfo.addCell(String.valueOf(record.getPatient().getInsuranceNumber()));
-            recordInfo.addCell(getHeaderCell("Patient Name"));
+            recordInfo.addCell(HeaderTop("Patient Name"));
             recordInfo.addCell(record.getPatient().getFullName());
-            recordInfo.addCell(getHeaderCell("Email"));
+            recordInfo.addCell(HeaderTop("Email"));
             recordInfo.addCell(record.getPatient().getEmail());
             document.add(recordInfo);
 
@@ -161,9 +166,9 @@ public class PdfUtils {
                     .setMarginBottom(20);
             document.add(title);
 
-
+            int appointmentsCount = Math.max(10 - patient.getAppointments().size(), 0);
             // Available Appointments
-            Paragraph availableAppointments = new Paragraph("Available Appointments: " + (10 - patient.getAppointments().size()))
+            Paragraph availableAppointments = new Paragraph("Available Appointments: " + appointmentsCount)
                     .setFontSize(14)
                     .setItalic()
                     .setTextAlignment(TextAlignment.CENTER)
@@ -174,11 +179,11 @@ public class PdfUtils {
             float[] colWidths = {1, 1, 1, 2, 1};
             Table appointmentsTable = new Table(UnitValue.createPercentArray(colWidths));
             appointmentsTable.setWidth(UnitValue.createPercentValue(100));
-            appointmentsTable.addHeaderCell(getHeaderCell("Date"));
-            appointmentsTable.addHeaderCell(getHeaderCell("Diagnosis"));
-            appointmentsTable.addHeaderCell(getHeaderCell("Treatment"));
-            appointmentsTable.addHeaderCell(getHeaderCell("Observations"));
-            appointmentsTable.addHeaderCell(getHeaderCell("Physio"));
+            appointmentsTable.addHeaderCell(HeaderTop("Date"));
+            appointmentsTable.addHeaderCell(HeaderTop("Diagnosis"));
+            appointmentsTable.addHeaderCell(HeaderTop("Treatment"));
+            appointmentsTable.addHeaderCell(HeaderTop("Observations"));
+            appointmentsTable.addHeaderCell(HeaderTop("Physio"));
             //name physio.getFullName()
 
             System.out.println(patient.getAppointments().size());
@@ -209,11 +214,5 @@ public class PdfUtils {
         return newPdf;
     }
 
-    private static Cell getHeaderCell(String text) {
-        return new Cell().add(new Paragraph(text))
-                .setBackgroundColor(ColorConstants.CYAN)
-                .setBold()
-                .setBorder(new SolidBorder(ColorConstants.BLUE, 1))
-                .setTextAlignment(TextAlignment.LEFT);
-    }
+
 }

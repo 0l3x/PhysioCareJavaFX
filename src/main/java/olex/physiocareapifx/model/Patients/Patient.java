@@ -20,6 +20,7 @@ public class Patient {
     private String insuranceNumber;
     private String email;
     private List<Appointment> appointments;
+    private String password;
 
     public Patient() {}
 
@@ -32,6 +33,17 @@ public class Patient {
         this.insuranceNumber = insuranceNumber;
         this.email = email;
     }
+    public Patient(String id, String name, String surname, String birthDate, String address, String insuranceNumber, String email,String password) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.insuranceNumber = insuranceNumber;
+        this.email = email;
+        this.password = password;
+    }
+
 
     // Getters and setters
 
@@ -93,6 +105,14 @@ public class Patient {
 
     public String getFullName() {
         return name + " " + surname;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public List<Appointment> getAppointments() {
