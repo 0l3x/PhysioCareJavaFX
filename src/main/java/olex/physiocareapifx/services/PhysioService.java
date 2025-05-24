@@ -5,7 +5,10 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Physios.Physio;
+import olex.physiocareapifx.model.Physios.PhysioResponse;
 import olex.physiocareapifx.utils.ServiceUtils;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Service class to handle asynchronous operations (POST, PUT, DELETE) for Physios.
@@ -57,5 +60,23 @@ public class PhysioService extends Service<BaseResponse> {
                 };
             }
         };
+    }
+
+    public static CompletableFuture<PhysioResponse> getPhysio(String id) {
+        CompletableFuture<PhysioResponse> future = new CompletableFuture<>();
+       future = ServiceUtils.getResponseAsync(
+                ServiceUtils.API_URL + "/physios/" + id,
+                null,
+                "GET"
+        ).thenApply(json -> new Gson().fromJson(json, PhysioResponse.class));
+       while (!future.isDone()) {
+            try {
+                Thread.sleep(100); // Polling delay
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                future.completeExceptionally(e);
+            }
+        }
+        return future;
     }
 }

@@ -12,11 +12,15 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.Patients.Patient;
+import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.model.Records.Record;
 import olex.physiocareapifx.services.PatientService;
+import olex.physiocareapifx.services.PhysioService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class PdfUtils {
     private static final Paragraph header = new Paragraph("COHMPANY Clinic S.A. - S/ McDonalds, Tenesse")
@@ -175,6 +179,7 @@ public class PdfUtils {
             appointmentsTable.addHeaderCell(getHeaderCell("Treatment"));
             appointmentsTable.addHeaderCell(getHeaderCell("Observations"));
             appointmentsTable.addHeaderCell(getHeaderCell("Physio"));
+            //name physio.getFullName()
 
             System.out.println(patient.getAppointments().size());
             for (Appointment a: patient.getAppointments()) {
@@ -183,7 +188,7 @@ public class PdfUtils {
                     appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDiagnosis().isBlank() ? a.getDiagnosis() : "Empty Diagnosis")).setFontSize(9));
                     appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getTreatment().isBlank() ? a.getTreatment() : "Empty Treatment")).setFontSize(9));
                     appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getObservations().isBlank() ? a.getObservations() : "Empty Observations")).setFontSize(9));
-                    //appointmentsTable.addCell(new Cell().add(new Paragraph(a.getPhysio().getFullName())).setFontSize(9));
+                    appointmentsTable.addCell(new Cell().add(new Paragraph(a.getNamePhysio())).setFontSize(9));
                 }
             }
 
@@ -196,6 +201,10 @@ public class PdfUtils {
 
         }catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         return newPdf;
     }

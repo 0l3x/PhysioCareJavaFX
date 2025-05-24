@@ -2,6 +2,11 @@ package olex.physiocareapifx.model.Appointments;
 
 import com.google.gson.annotations.SerializedName;
 import olex.physiocareapifx.model.Physios.Physio;
+import olex.physiocareapifx.model.Physios.PhysioResponse;
+import olex.physiocareapifx.services.PhysioService;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class Appointment {
     @SerializedName("_id")
@@ -89,6 +94,23 @@ public class Appointment {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getNamePhysio() throws ExecutionException, InterruptedException {
+        CompletableFuture<String> namePhysioFuture =
+                PhysioService.getPhysio(physio)
+                        .thenApply(physioResponse -> {
+                            if (physioResponse.isOk()) {
+                                return physioResponse.getPhysio().getName();
+                            } else {
+                                return "Unknown Physio";
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            return "Unknown Physio";
+                        });
+
+        return namePhysioFuture.get();
     }
 
     @Override

@@ -29,10 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -78,8 +75,8 @@ public class Email {
 
     public static void sendPatientEmail(Patient patient) {
 
-        //File dest = PdfUtils.getPatientPdf(patient);
-        //System.out.println(dest.getName());
+        File dest = PdfUtils.getPatientAppointmentsPdf(patient);
+        System.out.println(dest.getName());
         System.out.println(patient.getEmail());
         try {
             // Build a new authorized API client service.
@@ -98,7 +95,7 @@ public class Email {
                     "You are about to reach the limit of available appointments. " +
                             "See the attached document for more details.",
                     dest.getAbsolutePath());*/
-             MimeMessage emailContent= createEmailWithAttachment3(
+             MimeMessage emailContent= createEmailWithAttachment(
                     patient.getEmail(),
                     SENDER,
                     "Cohmpany Notice",
@@ -107,7 +104,9 @@ public class Email {
                             "You will not be able to schedule any more.\n" +
                             "Please contact support if you have any questions.\n\n" +
                             "Best regards,\n" +
-                            "Cohmpany Team");
+                            "Cohmpany Team",
+                    dest.getAbsolutePath()
+                     );
             // Send the email
             sendMessage(service, user, emailContent);
         } catch (Exception e) {
@@ -116,13 +115,15 @@ public class Email {
         }
     }
 
-    /*public static void sendPhysiosEmails(List<Physio> physios){
+    public static void sendPhysiosEmails(List<Physio> physios){
         physios.forEach(Email::sendPhysioMail);
-    }*/
+    }
 
-   /* public static void sendPhysioMail(Physio physio) {
+   public static void sendPhysioMail(Physio physio) {
 
-        File dest = PdfUtils.getPhysioPdf(physio);
+        //File dest = PdfUtils.getPhysioPdf(physio);
+       System.out.println("Sending email to physio: " + physio.getName());
+       System.out.println("Physio email: " + physio.getEmail());
         try {
 
             // Build a new authorized API client service.
@@ -135,19 +136,38 @@ public class Email {
             // Define the email parameters
             String user = "me";
             System.out.println(physio.getEmail());
-            MimeMessage emailContent= createEmailWithAttachment(
+           /* MimeMessage emailContent= createEmailWithAttachment(
                     physio.getEmail(),
                     SENDER,
-                    "Salary",
-                    "Hi " + physio.getName() + ", we have processed your salary for this current month.",
-                    dest.getAbsolutePath());
+                    "COHMPANY Payslip for " + physio.getName(),
+                    "Dear " + physio.getName() + ",\n\n" +
+                            "I hope you are well.\n\n" +
+                            "Please find attached the payroll statement for the period of May 1, 2025 – May 15, 2025. " +
+                            "This document details your gross earnings, deductions (including social security and tax withholdings), and net pay for the specified pay period.\n\n" +
+                            "Should you have any questions or require further clarification regarding your payslip, do not hesitate to contact the Payroll Department at  payroll@company.com or call extension 1234.\n\n" +
+                            "Thank you for your continued dedication and hard work.\n\n" +
+                            "Kind regards,\n\n" ,
+                    dest.getAbsolutePath());*/
+            MimeMessage emailContent= createEmailWithAttachment3(
+                    physio.getEmail(),
+                    SENDER,
+                    "COHMPANY Payslip for " + physio.getName(),
+                    "Dear " + physio.getName() + ",\n\n" +
+                            "I hope you are well.\n\n" +
+                            "Please find attached the payroll statement for the period of "+new Date() +"\n" +
+                            "This document details your gross earnings, deductions (including social security and tax withholdings), and net pay for the specified pay period.\n\n" +
+                            "Should you have any questions or require further clarification regarding your payslip, do not hesitate to contact the Payroll Department at  payroll@company.com or call extension 1234.\n\n" +
+                            "Thank you for your continued dedication and hard work.\n\n" +
+                            "Kind regards,\n\n"
+                   );
 
             // Send the email
             sendMessage(service, user, emailContent);
         } catch (Exception e) {
             System.out.println("Error sending physio email");
         }
-    }*/
+    }
+
     public static Credential getCredentials(
             final NetHttpTransport HTTP_TRANSPORT) throws Exception {
         // Load client secrets.

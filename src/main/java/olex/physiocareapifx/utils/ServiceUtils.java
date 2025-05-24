@@ -107,7 +107,7 @@ public class ServiceUtils {
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36");
 
             // token para testing // PDF Utils 18/05
-           TokenManager.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6ImhlY3RvcjIiLCJyb2wiOiJhZG1pbiIsImlkIjoiNjdmM2ZlMzg5NmI0OWIxODkyYjE4MmQ2IiwiaWF0IjoxNzQ4MDA4MjQ4LCJleHAiOjE3NDgwMTU0NDh9.DkKDpVKhnajjhIr9VSs--xXwqw0M0PfBHOjtwy62GvU");
+           //TokenManager.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6ImhlY3RvcjIiLCJyb2wiOiJhZG1pbiIsImlkIjoiNjdmM2ZlMzg5NmI0OWIxODkyYjE4MmQ2IiwiaWF0IjoxNzQ4MDA4MjQ4LCJleHAiOjE3NDgwMTU0NDh9.DkKDpVKhnajjhIr9VSs--xXwqw0M0PfBHOjtwy62GvU");
 
 
             // If set, send the authentication token

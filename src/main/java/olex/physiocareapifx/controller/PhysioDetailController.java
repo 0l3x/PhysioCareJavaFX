@@ -22,10 +22,7 @@ import olex.physiocareapifx.model.Records.RecordListResponse;
 import olex.physiocareapifx.model.Records.RecordResponse;
 import olex.physiocareapifx.services.AppointmentService;
 import olex.physiocareapifx.services.PhysioService;
-import olex.physiocareapifx.utils.MessageUtils;
-import olex.physiocareapifx.utils.SceneLoader;
-import olex.physiocareapifx.utils.ServiceUtils;
-import olex.physiocareapifx.utils.Utils;
+import olex.physiocareapifx.utils.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,6 +69,7 @@ public class PhysioDetailController implements Initializable {
     public ObservableList<Appointment> appointments = FXCollections.observableArrayList();
     public TextField txtSurname;
     public Physio physio = new Physio();
+    public Button btn_paylish;
     String imageBase64 = "";
     Boolean isModify = false;
 
@@ -126,6 +124,7 @@ public class PhysioDetailController implements Initializable {
         ContextMenu contextMenu = new ContextMenu();
         addBtn.setOnAction(e->addAppointment());
         editBtn.setOnAction(e->updateAppointment());
+
         tableViewAppointment.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 fillFieldsFromAppointment(newVal);
@@ -169,6 +168,9 @@ public class PhysioDetailController implements Initializable {
             contextMenu.hide();
         });
         getPhysioById();
+        btn_paylish.setOnAction(e->{
+            Email.sendPhysioMail(physio);
+        });
     }
 
     //// Get Appointments
@@ -344,6 +346,7 @@ public class PhysioDetailController implements Initializable {
                 .thenApply(json->gson.fromJson(json, PhysioResponse.class))
                 .thenAccept(response->{
                     if(response.isOk()){
+                        physio = response.getPhysio();
                         Platform.runLater(()->{
                             System.out.println(response);
                             txtName.setText(response.getPhysio().getName());

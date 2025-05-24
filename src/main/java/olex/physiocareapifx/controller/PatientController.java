@@ -80,7 +80,6 @@ public class PatientController {
         //deleteBtn.setOnAction(e -> deletePatient());
         exitBtn.setOnAction(actionEvent -> {
             try {
-                executorService.shutdown();
                 SceneLoader.loadScreen("menu.fxml",(Stage) ((Node) actionEvent.getSource()).getScene().getWindow());
             } catch (IOException e) {
                 throw new RuntimeException(e);
