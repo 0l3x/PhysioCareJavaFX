@@ -106,12 +106,13 @@ public class PatientDetailController implements Initializable {
         colTreatment.setCellValueFactory(new PropertyValueFactory<>("treatment"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         getAppointment();
+        loadPatient();
 
     }
     private void loadPatient() {
         new Thread(() -> {
             try {
-                String json = ServiceUtils.getResponse(ServiceUtils.API_URL + "/patients/"+userPhysio, null, "GET");
+                String json = ServiceUtils.getResponse(ServiceUtils.API_URL +"/patients/"+userPhysio, null, "GET");
                 PatientResponse response = gson.fromJson(json, PatientResponse.class);
                 if (response.isOk()) {
                     patient = response.getPatient();
