@@ -39,7 +39,6 @@
                </font>
             </Text>
             <Text layoutX="54.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Medical Record" wrappingWidth="403.13671875" />
-            <Text fx:id="lbl_medical" layoutX="54.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" text="MedicalRecord" wrappingWidth="403.13671875" />
             <TableView fx:id="tableViewAppointment" layoutX="26.0" layoutY="159.0" prefHeight="333.0" prefWidth="507.0">
                <columns>
                   <TableColumn fx:id="colDate" prefWidth="81.59997862577438" text="Date" />
@@ -52,6 +51,7 @@
             </TableView>
             <Text layoutX="26.0" layoutY="148.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Appointments" wrappingWidth="403.13671875" />
             <Button fx:id="btn_download" layoutX="360.0" layoutY="32.0" mnemonicParsing="false" text="Download record" />
+            <TextField fx:id="lbl_medical" layoutX="35.0" layoutY="110.0" prefHeight="25.0" prefWidth="493.0" />
          </children></AnchorPane>
   </items>
 </SplitPane>

@@ -253,7 +253,6 @@ public class PdfUtils {
             appointmentsTable.addHeaderCell(HeaderTop("Physio"));
             //name physio.getFullName()
 
-            System.out.println(patient.getAppointments().size());
             for (Appointment a: patient.getAppointments()) {
                 if (a.getStatus().equals("completed")) {
                     appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDate().isBlank() ? a.getDate() : "Empty Date")).setFontSize(9));
@@ -267,7 +266,6 @@ public class PdfUtils {
             document.add(appointmentsTable);
 
             document.close();
-            System.out.println("Patient appointments PDF created successfully.");
 
             newPdf = new File(dest);
 

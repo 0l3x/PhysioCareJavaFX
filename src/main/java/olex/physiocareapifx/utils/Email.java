@@ -43,7 +43,6 @@ public class Email {
     private static final String CREDENTIALS_FILE_PATH = "src/main/java/resources2/client_secret_45202089257-469ej7fbq4thf57ak66duqbhma638t31.apps.googleusercontent.com.json";
 
     public static void sendPatientsEmails(List<Patient> patients) {
-        System.out.println("Sending emails to patients..." + patients.size());
         patients.stream().forEach(p -> {
             CompletableFuture<List<Appointment>> future = AppointmentService.getAppointments(ServiceUtils.API_URL  +"/records/appointments/patients/" + p.getId());
             while (!future.isDone()) {
@@ -68,14 +67,12 @@ public class Email {
                         .toList()
                         .size() >= 8
                 ).forEach(Email::sendPatientEmail);
-        System.out.println("Sending emails to patients...");
+
     }
 
     public static void sendPatientEmail(Patient patient) {
 
         File dest = PdfUtils.getPatientAppointmentsPdf(patient);
-        System.out.println(dest.getName());
-        System.out.println(patient.getEmail());
         try {
             // Build a new authorized API client service.
             final NetHttpTransport HTTP_TRANSPORT = new NetHttpTransport();
@@ -119,9 +116,7 @@ public class Email {
 
    public static void sendPhysioMail(Physio physio) {
 
-        //File dest = PdfUtils.getPhysioPdf(physio);
-       System.out.println("Sending email to physio: " + physio.getName());
-       System.out.println("Physio email: " + physio.getEmail());
+
         try {
 
             final NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
@@ -230,7 +225,6 @@ public class Email {
     public static void sendMessage(Gmail service, String userId, MimeMessage emailContent) throws MessagingException, java.io.IOException {
         Message message = createMessageWithEmail(emailContent);
         service.users().messages().send(userId, message).execute();
-        System.out.println("Email sent successfully.");
     }
 
     public static Message createMessageWithEmail(MimeMessage email) throws MessagingException, java.io.IOException {

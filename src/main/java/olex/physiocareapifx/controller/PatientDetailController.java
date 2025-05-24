@@ -16,6 +16,7 @@ import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Patients.Patient;
 import olex.physiocareapifx.model.Patients.PatientListResponse;
 import olex.physiocareapifx.model.Patients.PatientResponse;
+import olex.physiocareapifx.model.Records.RecordResponse;
 import olex.physiocareapifx.services.AppointmentService;
 import olex.physiocareapifx.services.PatientService;
 import olex.physiocareapifx.utils.MessageUtils;
@@ -25,7 +26,10 @@ import olex.physiocareapifx.utils.Utils;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 
 import static olex.physiocareapifx.utils.Utils.userId;
 import static olex.physiocareapifx.utils.Utils.userPhysio;
@@ -39,7 +43,7 @@ public class PatientDetailController implements Initializable {
     public TextField lbl_email;
     public TextField lbl_insuranceNumber;
     public DatePicker lbl_date;
-    public Text lbl_medical;
+    public TextField lbl_medical;
     public TableView<Appointment> tableViewAppointment;
     @FXML
     public TableColumn<Appointment,String> colDate;
@@ -99,16 +103,52 @@ public class PatientDetailController implements Initializable {
                 MessageUtils.showError("Error", "Failed to load menu");
             }
         });
+        btn_Add.setOnAction(actionEvent -> {
+            updatePatient();
+        });
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colDiagnosis.setCellValueFactory(new PropertyValueFactory<>("diagnosis"));
         colObservations.setCellValueFactory(new PropertyValueFactory<>("observations"));
         colPhysio.setCellValueFactory(new PropertyValueFactory<>("physio"));
         colTreatment.setCellValueFactory(new PropertyValueFactory<>("treatment"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        getAppointment();
+       // getAppointment();
+        getRecords();
         loadPatient();
 
+
     }
+
+    private void getRecords() {
+        String url = ServiceUtils.API_URL + "/records/patient/" + userPhysio;
+        CompletableFuture<RecordResponse> future = AppointmentService.getRecords(url);
+        future.thenAccept(recordResponse -> {
+            if (recordResponse.isOk()) {
+                Platform.runLater(() -> {
+                    lbl_medical.setText(recordResponse.getRecord().getMedicalRecord());
+                    appointments.clear();
+                    appointments.addAll(recordResponse.getRecord().getAppointments());
+                    tableViewAppointment.setItems(appointments);
+                });
+            } else {
+                Platform.runLater(() -> {
+                    MessageUtils.showError("Error", "No se pudo cargar el historial médico del paciente.");
+                });
+            }
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            Platform.runLater(() -> {
+                MessageUtils.showError("Error", "Fallo al obtener el historial médico: " + ex.getMessage());
+            });
+            return null;
+        });
+
+
+
+
+    }
+
+
     private void loadPatient() {
         new Thread(() -> {
             try {
@@ -121,7 +161,9 @@ public class PatientDetailController implements Initializable {
                             if (patient != null) {
                                 lbl_name.setText(patient.getName());
                                 lbl_surname.setText(patient.getSurname());
-                                lbl_date.setValue(LocalDate.parse(patient.getBirthDate()));
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+                                LocalDate parsedDate = LocalDate.parse(patient.getBirthDate(), formatter);
+                                lbl_date.setValue(parsedDate);
                                 lbl_addres.setText(patient.getAddress());
                                 lbl_insuranceNumber.setText(patient.getInsuranceNumber());
                                 lbl_email.setText(patient.getEmail() != null ? patient.getEmail() : "");
@@ -144,7 +186,7 @@ public class PatientDetailController implements Initializable {
      * Updates a selected patient with the form data.
      */
     private void updatePatient() {
-        Patient selected = null;
+        Patient selected = patient;
         if (selected == null) {
             MessageUtils.showError("Error", "Selecciona un paciente para editar.");
             return;
@@ -165,7 +207,9 @@ public class PatientDetailController implements Initializable {
         service.setOnSucceeded(e -> {
             BaseResponse response = service.getValue();
             if (response.isOk()) {
-
+                MessageUtils.showMessage("Éxito", "Paciente actualizado correctamente.");
+                // Actualizar la vista o realizar otras acciones necesarias
+                loadPatient(); // Recargar los datos del paciente
             } else {
                 MessageUtils.showError("Error", response.getError());
             }

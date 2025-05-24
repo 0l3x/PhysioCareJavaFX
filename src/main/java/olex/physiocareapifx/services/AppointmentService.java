@@ -10,6 +10,8 @@ import javafx.util.Callback;
 import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
 import olex.physiocareapifx.model.Appointments.AppointmentResponse;
+import olex.physiocareapifx.model.Records.Record;
+import olex.physiocareapifx.model.Records.RecordResponse;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.ServiceUtils;
 
@@ -72,5 +74,21 @@ public class AppointmentService {
         ).thenApply(__->null);
     }
 
+    public static CompletableFuture<RecordResponse>  getRecords(String url){
+       CompletableFuture<RecordResponse> future = ServiceUtils.getResponseAsync(url, null, "GET")
+                .thenApply(response -> gson.fromJson(response, RecordResponse.class));
+
+       while (!future.isDone()) {
+            try {
+                Thread.sleep(100); // Wait for 100 milliseconds
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Restore interrupted status
+                break;
+            }
+        }
+         return future;
+
+
+    }
 
 }

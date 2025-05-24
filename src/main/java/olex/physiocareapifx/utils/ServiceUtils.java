@@ -20,7 +20,7 @@ public class ServiceUtils {
      * Base URL of the API. Can be changed to point to different environments (e.g., localhost, VPS).
      */
     //public static final String API_URL = "http://olexanderg.net:8080";
-    public static final String API_URL = "https://hectorrp.com:8080/api";
+    public static final String API_URL = "https://hectorrp.com/api";
     /**
      * Sends an HTTP request to the specified URL with the given data and method,
      * and returns the response as a String.
