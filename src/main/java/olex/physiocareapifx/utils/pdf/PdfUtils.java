@@ -17,7 +17,7 @@ import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.model.Physios.PhysioResponse;
 import olex.physiocareapifx.model.Records.Record;
 import olex.physiocareapifx.services.AppointmentService;
-import olex.physiocareapifx.services.PatientService;
+import olex.physiocareapifx.services.PhysioService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
