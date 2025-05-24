@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public class PatientService extends Service<BaseResponse> {
     private static final Gson gson = new Gson();
 
-    // para PDFS
+    // para PDFS, prueba del main de PdfUtils
     public static CompletableFuture<Patient> getAppointmentsOfPatientById(String id) {
         return ServiceUtils.getResponseAsync(
                 ServiceUtils.API_URL + "/records/appointments/patients/" + id,

@@ -52,28 +52,28 @@ public class PdfUtils {
 //            }
 //        }
 
-        System.out.println("Creating PDF de patient...");
-        PatientService.getAppointmentsOfPatientById("67f3fe3996b49b1892b182dc")
-                .thenAccept(patient ->{
-                    if(patient != null) {
-                        //System.out.println("Record ID: " + patient.getPatient().getId());
-                        getPatientAppointmentsPdf(patient);
-                        System.out.println("PDF created");
-                        //createMedicalRecordPdf(record.getPatient());
-                    }else{
-                        System.out.println("Error: " + "Patient not found");
-                    }
-                }).exceptionally(e -> {
-                    System.out.println("Error: " + e.getMessage());
-                    return null;
-                });
-        while (true) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        System.out.println("Creating PDF de patient...");
+//        PatientService.getAppointmentsOfPatientById("67f3fe3996b49b1892b182dc")
+//                .thenAccept(patient ->{
+//                    if(patient != null) {
+//                        //System.out.println("Record ID: " + patient.getPatient().getId());
+//                        getPatientAppointmentsPdf(patient);
+//                        System.out.println("PDF created");
+//                        //createMedicalRecordPdf(record.getPatient());
+//                    }else{
+//                        System.out.println("Error: " + "Patient not found");
+//                    }
+//                }).exceptionally(e -> {
+//                    System.out.println("Error: " + e.getMessage());
+//                    return null;
+//                });
+//        while (true) {
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     public static void createMedicalRecordPdf(Record record){
