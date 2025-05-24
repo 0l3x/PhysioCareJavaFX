@@ -1,8 +1,12 @@
 package olex.physiocareapifx.services;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import olex.physiocareapifx.model.Appointments.Appointment;
+import olex.physiocareapifx.model.Appointments.AppointmentResponse;
 import olex.physiocareapifx.model.BaseResponse;
 import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.model.Physios.PhysioResponse;
@@ -14,6 +18,26 @@ import java.util.concurrent.CompletableFuture;
  * Service class to handle asynchronous operations (POST, PUT, DELETE) for Physios.
  */
 public class PhysioService extends Service<BaseResponse> {
+    private static final Gson gson = new Gson();
+
+    public static CompletableFuture<PhysioResponse> getById(String physioId) {
+        String url = ServiceUtils.API_URL + "/physios/" + physioId;
+        return ServiceUtils
+                .getResponseAsync(url, null, "GET")
+                .thenApply(jsonStr -> {
+                    // parseamos el JSON completo
+                    JsonObject root = JsonParser.parseString(jsonStr).getAsJsonObject();
+                    // opcional: comprobar ok == true
+                    if (!root.get("ok").getAsBoolean()) {
+                        throw new RuntimeException("API error: " + root.get("error"));
+                    }
+                    // obtenemos el objeto dentro de "resultado"
+                    JsonObject physioObj = root.getAsJsonObject("resultado");
+                    // lo convertimos a nuestro modelo Physio
+                    return gson.fromJson(physioObj, PhysioResponse.class);
+                });
+    }
+
     public enum Method { POST, PUT, DELETE }
 
     private Method method;

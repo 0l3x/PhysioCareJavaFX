@@ -11,14 +11,23 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import olex.physiocareapifx.model.Appointments.Appointment;
+import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
 import olex.physiocareapifx.model.Patients.Patient;
 import olex.physiocareapifx.model.Physios.Physio;
+import olex.physiocareapifx.model.Physios.PhysioResponse;
 import olex.physiocareapifx.model.Records.Record;
+import olex.physiocareapifx.services.AppointmentService;
 import olex.physiocareapifx.services.PatientService;
 import olex.physiocareapifx.services.PhysioService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -74,6 +83,60 @@ public class PdfUtils {
 //                e.printStackTrace();
 //            }
 //        }
+
+//        AppointmentService appointmentService = new AppointmentService();
+//
+//        String id = "67f3fe3996b49b1892b182e4";
+//
+//        CompletableFuture<PhysioResponse> fut1 = PhysioService.getById(id);
+//        CompletableFuture<AppointmentListResponse> fut2 = AppointmentService.getByPhysioId(id);
+//
+//        CompletableFuture.allOf(fut1, fut2).thenRun(() -> {
+//            Physio p    = fut1.join().getPhysio();
+//            List<Appointment> apps = fut2.join().getAppointments();
+//            p.setAppointments(apps);
+//            PdfUtils.createPhysioPdf(p);
+//        });
+
+        // El ID del fisioterapeuta que quieres probar
+        String physioId = "67f3fe3996b49b1892b182e4";
+
+        // Lanzamos ambas llamadas asíncronas
+        CompletableFuture<PhysioResponse> physioFut = PhysioService.getById(physioId);
+        CompletableFuture<AppointmentListResponse> appsFut = AppointmentService.getByPhysioId(physioId);
+
+        // Cuando ambas terminen, las unimos
+        CompletableFuture<Void> combined = CompletableFuture
+                .allOf(physioFut, appsFut)
+                .thenRun(() -> {
+                    PhysioResponse physioResp = physioFut.join();
+                    AppointmentListResponse appsResp = appsFut.join();
+
+                    if (!physioResp.isOk()) {
+                        System.err.println("Error al obtener el fisio: " + physioResp.getError());
+                        return;
+                    }
+                    if (!appsResp.isOk()) {
+                        System.err.println("Error al obtener citas: " + appsResp.getError());
+                        return;
+                    }
+
+                    Physio p = physioResp.getPhysio();              // tu PhysioResponse debería exponer getResultado()
+                    List<Appointment> citas = appsResp.getAppointments();
+
+                    p.setAppointments(citas);                          // le inyectamos las citas
+                    PdfUtils.createPhysioPdf(p);                       // y generamos el PDF
+
+                    System.out.println("✅ PDF de nómina creado para " + p.getFullName());
+                })
+                .exceptionally(err -> {
+                    err.printStackTrace();
+                    return null;
+                });
+
+        // Esperamos a que todo termine antes de salir
+        combined.join();
+
     }
 
     public static void createMedicalRecordPdf(Record record){
@@ -205,6 +268,114 @@ public class PdfUtils {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+        return newPdf;
+    }
+
+    public static File createPhysioPdf(Physio physio){
+        LocalDate now = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(now);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+
+        String dest = "resources/physios/" + physio.getLicenseNumber() + "_" + currentMonth + ".pdf";
+        File newPdf = null;
+        Document document;
+        try{
+            PdfWriter writer = new PdfWriter(dest);
+            PdfDocument pdf = new PdfDocument(writer);
+            document = new Document(pdf);
+
+            document.add(header);
+
+            // Title
+            Paragraph title = new Paragraph("- PAYROLL -")
+                    .setFontSize(20)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginBottom(20);
+            document.add(title);
+
+            // Count last month confirmed appointments
+            List<Appointment> confirmed = physio.getAppointments()
+                    .stream()
+                    .filter(a -> {
+                        if(Objects.equals(a.getStatus(), "pending") && Objects.equals(a.getStatus(), "completed") && !a.getDate().isBlank()) {
+                            LocalDate appointmentDate = LocalDate.parse(a.getDate(), formatter);
+                            YearMonth appointmentYM = YearMonth.from(appointmentDate);
+                            return appointmentYM.equals(currentMonth);
+                        }
+                        return false;
+                    }).toList();
+
+            // Calcular salario total
+            double totalSalary = (confirmed.size() * 100);
+
+            // Crear tabla resumen
+            float[] summaryColWidths = {3, 3};
+            Table salarySummary = new Table(UnitValue.createPercentArray(summaryColWidths));
+            salarySummary.setWidth(UnitValue.createPercentValue(50));
+            salarySummary.addCell(new Cell().add(new Paragraph("Physiotherapist")).setFontSize(12).setBold());
+            salarySummary.addCell(new Cell().add(new Paragraph(physio.getFullName())).setFontSize(12));
+            salarySummary.addCell(new Cell().add(new Paragraph("Month")).setFontSize(12).setBold());
+            salarySummary.addCell(new Cell().add(new Paragraph(currentMonth.toString())).setFontSize(10));
+            salarySummary.addCell(new Cell().add(new Paragraph("Licence Number")).setFontSize(10).setBold());
+            salarySummary.addCell(new Cell().add(new Paragraph(physio.getLicenseNumber())).setFontSize(10));
+            salarySummary.addCell(new Cell().add(new Paragraph("Confirmed Appointments")).setFontSize(10).setBold());
+            salarySummary.addCell(new Cell().add(new Paragraph(String.valueOf(confirmed.size())).setFontSize(10)));
+            salarySummary.addCell(new Cell().add(new Paragraph("Total Salary")).setFontSize(12).setBold());
+            salarySummary.addCell(new Cell().add(new Paragraph(String.format("$%.2f", totalSalary))).setFontSize(12).setBold());
+
+            document.add(salarySummary);
+            document.add(new Paragraph("\n"));
+
+            // Confimed Appointments
+            Paragraph confirmedAppointments = new Paragraph("Confirmed Appointments")
+                    .setFontSize(14)
+                    .setItalic()
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginBottom(20);
+            document.add(confirmedAppointments);
+
+
+
+            if(!confirmed.isEmpty()){
+                // Table with patient info
+                float[] colWidths = {1, 1, 4, 1};
+                Table appointmentsTable = new Table(UnitValue.createPercentArray(colWidths));
+                appointmentsTable.setWidth(UnitValue.createPercentValue(100));
+                appointmentsTable.addHeaderCell(getHeaderCell("Date"));
+                appointmentsTable.addHeaderCell(getHeaderCell("PatientId"));
+                appointmentsTable.addHeaderCell(getHeaderCell("Treatment"));
+                appointmentsTable.addHeaderCell(getHeaderCell("Price"));
+
+                for (Appointment a: confirmed) {
+                    if (Objects.equals(a.getStatus(), "pending") && Objects.equals(a.getStatus(), "completed") ) {
+                        appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDate().isBlank() ? a.getDate() : "Empty Date")).setFontSize(9));
+                        appointmentsTable.addCell(new Cell().add(new Paragraph(a.getPatientId())).setFontSize(9));
+                        appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getTreatment().isBlank() ? a.getTreatment() : "Empty Treatment")).setFontSize(9));
+                        appointmentsTable.addCell(new Cell().add(new Paragraph("$100").setFontSize(9)));
+                    }
+                }
+                document.add(appointmentsTable);
+            }else{
+                Paragraph noAppointmentsMessage = new Paragraph("You need work hard!")
+                        .setFontSize(9)
+                        .setItalic()
+                        .setTextAlignment(TextAlignment.CENTER)
+                        .setMarginBottom(20);
+                document.add(confirmedAppointments);
+
+                document.add(noAppointmentsMessage);
+            }
+
+
+            document.close();
+            System.out.println("Physio salary PDF created successfully.");
+
+            newPdf = new File(dest);
+
+        }catch (FileNotFoundException e) {
+            System.out.println("File not found: " + e.getMessage());
         }
         return newPdf;
     }

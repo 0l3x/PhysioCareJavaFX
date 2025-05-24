@@ -40,6 +40,13 @@ public class AppointmentService {
                 json-> gson.fromJson(json, AppointmentResponse.class).getAppointment());
     }
 
+    public static CompletableFuture<AppointmentListResponse> getByPhysioId(String physioId) {
+        String url = ServiceUtils.API_URL + "/appointments/physio/" + physioId;
+        return ServiceUtils
+                .getResponseAsync(url, null, "GET")
+                .thenApply(json -> gson.fromJson(json, AppointmentListResponse.class));
+    }
+
     public static CompletableFuture<AppointmentResponse> createAppointment(String url, Appointment appointment){
         return ServiceUtils.getResponseAsync(
                 url,
