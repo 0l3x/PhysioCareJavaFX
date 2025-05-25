@@ -24,6 +24,7 @@ import olex.physiocareapifx.model.Physios.Physio;
 import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.services.AppointmentService;
 import olex.physiocareapifx.utils.pdf.PdfUtils;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,9 +39,13 @@ public class Email {
     private static final JsonFactory JSON_FACTORY =
             GsonFactory.getDefaultInstance();
 
-    private static final String SENDER = "olexanderg3@gmail.com";
+    private static final Dotenv dotenv = Dotenv.configure()
+            .ignoreIfMissing()
+            .load();
+
+    private static final String SENDER = dotenv.get("SENDER");
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-    private static final String CREDENTIALS_FILE_PATH = "resources2/client_secret_522949174539-fdt6bni4hvong4930shc6qf7llfcskis.apps.googleusercontent.com.json";
+    private static final String CREDENTIALS_FILE_PATH = dotenv.get("CREDENTIALS_FILE_PATH");
 
     /**
      * Sends emails to patients who have reached the limit of available appointments.

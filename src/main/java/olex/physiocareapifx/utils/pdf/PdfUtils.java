@@ -51,12 +51,13 @@ public class PdfUtils {
     // para pruebas internas
     public static void main(String[] args) {
 
-        crearPDFpatient();
+        //crearPDFpatient();
         //crearPDFrecord();
         //crearPDFphysio();
 
     }
 
+    // useless
     public static void crearPDFpatient() {
         System.out.println("Creating PDF de patient...");
         PatientService.getAppointmentsOfPatientById("67f3fe3996b49b1892b182dc")
@@ -82,6 +83,7 @@ public class PdfUtils {
         }
     }
 
+    // useless
     public static void crearPDFrecord() {
         System.out.println("Creating PDF de record...");
         RecordService.getRecordById("67f3fe3996b49b1892b182f0")
@@ -106,6 +108,7 @@ public class PdfUtils {
         }
     }
 
+    // useless
     public static void crearPDFphysio() {
         System.out.println("Creating PDF de physio...");
         String physioId = "67f3fe3996b49b1892b182e4";

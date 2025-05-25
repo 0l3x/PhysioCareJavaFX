@@ -15,6 +15,7 @@ module olex.physiocareapifx {
     requires jakarta.mail;
     requires com.google.api.client.extensions.jetty.auth;
     requires jdk.httpserver;
+    requires java.dotenv;
 
     opens olex.physiocareapifx to javafx.fxml;
     opens olex.physiocareapifx.controller to javafx.fxml;
