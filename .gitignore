@@ -304,7 +304,6 @@ reports/
 
 
 #pdfs
-/resources/patients/*
-/resources/records/*
-/resources/physios/*
+/resources/*
 /resources2/*
+
