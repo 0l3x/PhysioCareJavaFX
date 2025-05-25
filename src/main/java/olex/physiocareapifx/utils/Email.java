@@ -38,21 +38,27 @@ public class Email {
     private static final JsonFactory JSON_FACTORY =
             GsonFactory.getDefaultInstance();
 
-    private static final String SENDER = "hectorrodriguezplanelles@gmail.com";
+    private static final String SENDER = "olexanderg3@gmail.com";
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-    private static final String CREDENTIALS_FILE_PATH = "src/main/java/resources2/client_secret_45202089257-469ej7fbq4thf57ak66duqbhma638t31.apps.googleusercontent.com.json";
+    private static final String CREDENTIALS_FILE_PATH = "resources2/client_secret_522949174539-fdt6bni4hvong4930shc6qf7llfcskis.apps.googleusercontent.com.json";
 
+    /**
+     * Sends emails to patients who have reached the limit of available appointments.
+     * It checks each patient's appointments and sends an email if they have 8 or more completed appointments.
+     *
+     * @param patients List of patients to check and send emails to.
+     */
     public static void sendPatientsEmails(List<Patient> patients) {
-        patients.stream().forEach(p -> {
+        patients.stream().forEach(p -> { // For each patient, fetch their appointments asynchronously
             CompletableFuture<List<Appointment>> future = AppointmentService.getAppointments(ServiceUtils.API_URL  +"/records/appointments/patients/" + p.getId());
             while (!future.isDone()) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(100); // Wait for the future to complete
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            future.thenAccept(appointment -> {
+            future.thenAccept(appointment -> { // Once the appointments are fetched, set them to the patient
                 if (appointment != null) {
                     p.setAppointments(appointment);
                 }
@@ -62,7 +68,7 @@ public class Email {
             });
         });
         patients.stream()
-                .filter(p -> p.getAppointments().stream()
+                .filter(p -> p.getAppointments().stream() // Filter patients who have 8 or more completed OR PENDING! appointments
                         .filter(a-> Objects.equals(a.getStatus(), "completed"))
                         .toList()
                         .size() >= 8

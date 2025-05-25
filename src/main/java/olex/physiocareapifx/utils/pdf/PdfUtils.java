@@ -19,6 +19,7 @@ import olex.physiocareapifx.model.Records.Record;
 import olex.physiocareapifx.services.AppointmentService;
 import olex.physiocareapifx.services.PatientService;
 import olex.physiocareapifx.services.PhysioService;
+import olex.physiocareapifx.services.RecordService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,52 +48,65 @@ public class PdfUtils {
                 .setTextAlignment(TextAlignment.LEFT);
     }
 
+    // para pruebas internas
     public static void main(String[] args) {
-//        System.out.println("Creating PDF de record...");
-//        RecordService.getRecordById("67f3fe3996b49b1892b182f0")
-//                .thenAccept(record ->{
-//                    if(record.isOk()) {
-//                        System.out.println("PDF created");
-//                        System.out.println("Record ID: " + record.getRecord().getId());
-//                        createMedicalRecordPdf(record.getRecord());
-//                    }else{
-//                        System.out.println("Error: " + record.getError());
-//                    }
-//                }).exceptionally(e -> {
-//                    System.out.println("Error: " + e.getMessage());
-//                    return null;
-//                });
-//        while (true) {
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
 
-//        System.out.println("Creating PDF de patient...");
-//        PatientService.getAppointmentsOfPatientById("67f3fe3996b49b1892b182dc")
-//                .thenAccept(patient ->{
-//                    if(patient != null) {
-//                        //System.out.println("Record ID: " + patient.getPatient().getId());
-//                        getPatientAppointmentsPdf(patient);
-//                        System.out.println("PDF created");
-//                        //createMedicalRecordPdf(record.getPatient());
-//                    }else{
-//                        System.out.println("Error: " + "Patient not found");
-//                    }
-//                }).exceptionally(e -> {
-//                    System.out.println("Error: " + e.getMessage());
-//                    return null;
-//                });
-//        while (true) {
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        crearPDFpatient();
+        //crearPDFrecord();
+        //crearPDFphysio();
 
+    }
+
+    public static void crearPDFpatient() {
+        System.out.println("Creating PDF de patient...");
+        PatientService.getAppointmentsOfPatientById("67f3fe3996b49b1892b182dc")
+                .thenAccept(patient ->{
+                    if(patient != null) {
+                        //System.out.println("Record ID: " + patient.getPatient().getId());
+                        getPatientAppointmentsPdf(patient);
+                        System.out.println("PDF created");
+                        //createMedicalRecordPdf(record.getPatient());
+                    }else{
+                        System.out.println("Error: " + "Patient not found");
+                    }
+                }).exceptionally(e -> {
+                    System.out.println("Error: " + e.getMessage());
+                    return null;
+                });
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void crearPDFrecord() {
+        System.out.println("Creating PDF de record...");
+        RecordService.getRecordById("67f3fe3996b49b1892b182f0")
+                .thenAccept(record ->{
+                    if(record.isOk()) {
+                        System.out.println("PDF created");
+                        System.out.println("Record ID: " + record.getRecord().getId());
+                        createMedicalRecordPdf(record.getRecord());
+                    }else{
+                        System.out.println("Error: " + record.getError());
+                    }
+                }).exceptionally(e -> {
+                    System.out.println("Error: " + e.getMessage());
+                    return null;
+                });
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void crearPDFphysio() {
         System.out.println("Creating PDF de physio...");
         String physioId = "67f3fe3996b49b1892b182e4";
 
@@ -134,8 +148,6 @@ public class PdfUtils {
                 break;
             }
         }
-
-
     }
 
     public static void createMedicalRecordPdf(Record record){

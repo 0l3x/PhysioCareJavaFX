@@ -21,24 +21,6 @@ import java.util.concurrent.CompletableFuture;
 public class PhysioService extends Service<BaseResponse> {
     private static final Gson gson = new Gson();
 
-//    public static CompletableFuture<PhysioResponse> getById(String physioId) {
-//        String url = ServiceUtils.API_URL + "/physios/" + physioId;
-//        return ServiceUtils
-//                .getResponseAsync(url, null, "GET")
-//                .thenApply(jsonStr -> {
-//                    // parseamos el JSON completo
-//                    JsonObject root = JsonParser.parseString(jsonStr).getAsJsonObject();
-//                    // opcional: comprobar ok == true
-//                    if (!root.get("ok").getAsBoolean()) {
-//                        throw new RuntimeException("API error: " + root.get("error"));
-//                    }
-//                    // obtenemos el objeto dentro de "resultado"
-//                    JsonObject physioObj = root.getAsJsonObject("resultado");
-//                    // lo convertimos a nuestro modelo Physio
-//                    return gson.fromJson(physioObj, PhysioResponse.class);
-//                });
-//    }
-
     public static CompletableFuture<PhysioResponse> getById(String physioId) {
         String url = ServiceUtils.API_URL + "/physios/" + physioId;
         return ServiceUtils
@@ -95,7 +77,7 @@ public class PhysioService extends Service<BaseResponse> {
     }
 
     public static CompletableFuture<PhysioResponse> getPhysio(String id) {
-        CompletableFuture<PhysioResponse> future = new CompletableFuture<>();
+        CompletableFuture<PhysioResponse> future;
        future = ServiceUtils.getResponseAsync(
                 ServiceUtils.API_URL + "/physios/" + id,
                 null,
