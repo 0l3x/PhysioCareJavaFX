@@ -43,7 +43,7 @@ public class AppointmentService {
     }
 
     public static CompletableFuture<AppointmentListResponse> getByPhysioId(String physioId) {
-        String url = ServiceUtils.API_URL + "/appointments/physio/" + physioId;
+        String url = ServiceUtils.API_URL + "/records/appointments/physio/" + physioId;
         return ServiceUtils
                 .getResponseAsync(url, null, "GET")
                 .thenApply(json -> gson.fromJson(json, AppointmentListResponse.class));

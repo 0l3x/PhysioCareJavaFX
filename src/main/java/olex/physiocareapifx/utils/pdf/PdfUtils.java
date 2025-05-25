@@ -93,58 +93,48 @@ public class PdfUtils {
 //            }
 //        }
 
-//        AppointmentService appointmentService = new AppointmentService();
-//
-//        String id = "67f3fe3996b49b1892b182e4";
-//
-//        CompletableFuture<PhysioResponse> fut1 = PhysioService.getById(id);
-//        CompletableFuture<AppointmentListResponse> fut2 = AppointmentService.getByPhysioId(id);
-//
-//        CompletableFuture.allOf(fut1, fut2).thenRun(() -> {
-//            Physio p    = fut1.join().getPhysio();
-//            List<Appointment> apps = fut2.join().getAppointments();
-//            p.setAppointments(apps);
-//            PdfUtils.createPhysioPdf(p);
-//        });
-
-        // El ID del fisioterapeuta que quieres probar
+        System.out.println("Creating PDF de physio...");
         String physioId = "67f3fe3996b49b1892b182e4";
 
-        // Lanzamos ambas llamadas asíncronas
-        CompletableFuture<PhysioResponse> physioFut = PhysioService.getById(physioId);
-        CompletableFuture<AppointmentListResponse> appsFut = AppointmentService.getByPhysioId(physioId);
+        // 1) Primero recuperamos el objeto Physio
+        PhysioService.getById(physioId)
+                .thenAccept(physioResp -> {
+                    if (physioResp.isOk()) {
+                        Physio physio = physioResp.getPhysio();
 
-        // Cuando ambas terminen, las unimos
-        CompletableFuture<Void> combined = CompletableFuture
-                .allOf(physioFut, appsFut)
-                .thenRun(() -> {
-                    PhysioResponse physioResp = physioFut.join();
-                    AppointmentListResponse appsResp = appsFut.join();
+                        // 2) Cuando tengamos el physio, pedimos sus citas
+                        AppointmentService.getByPhysioId(physioId)
+                                .thenAccept(appListResp -> {
+                                    // 3) Asignamos la lista de citas al objeto
+                                    physio.setAppointments(appListResp.getAppointments());
 
-                    if (!physioResp.isOk()) {
-                        System.err.println("Error al obtener el fisio: " + physioResp.getError());
-                        return;
+                                    // 4) Generamos el PDF
+                                    PdfUtils.createPhysioPdf(physio);
+                                    System.out.println("PDF created for physio: " + physio.getFullName());
+                                })
+                                .exceptionally(e -> {
+                                    System.err.println("Error fetching appointments: " + e.getMessage());
+                                    return null;
+                                });
+
+                    } else {
+                        System.err.println("Error fetching physio: " + physioResp.getError());
                     }
-                    if (!appsResp.isOk()) {
-                        System.err.println("Error al obtener citas: " + appsResp.getError());
-                        return;
-                    }
-
-                    Physio p = physioResp.getPhysio();              // tu PhysioResponse debería exponer getResultado()
-                    List<Appointment> citas = appsResp.getAppointments();
-
-                    p.setAppointments(citas);                          // le inyectamos las citas
-                    PdfUtils.createPhysioPdf(p);                       // y generamos el PDF
-
-                    System.out.println("✅ PDF de nómina creado para " + p.getFullName());
                 })
-                .exceptionally(err -> {
-                    err.printStackTrace();
+                .exceptionally(e -> {
+                    System.err.println("Error fetching physio: " + e.getMessage());
                     return null;
                 });
 
-        // Esperamos a que todo termine antes de salir
-        combined.join();
+        // Mantenemos la aplicación viva hasta que termine la CompletableFuture
+        while (true) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+
 
     }
 
