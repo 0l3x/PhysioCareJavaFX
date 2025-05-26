@@ -307,3 +307,5 @@ reports/
 /resources/*
 /resources2/*
 
+.env
+
