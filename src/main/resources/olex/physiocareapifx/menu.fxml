@@ -17,30 +17,30 @@
    <children>
       <VBox alignment="TOP_CENTER" prefHeight="468.0" prefWidth="861.0" spacing="10.0">
          <children>
-            <HBox alignment="CENTER" prefHeight="57.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: #88e1f7;">
+            <HBox alignment="CENTER" prefHeight="57.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: #6c9286;">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="COHMPANY" textAlignment="CENTER" wrappingWidth="119.2418212890625">
                      <font>
                         <Font name="Lucida Console" size="18.0" />
                      </font>
                   </Text>
-                  <MFXButton fx:id="btnPatients" blendMode="SRC_ATOP" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" rippleColor="#aacee1" style="-fx-background-radius: 23px;" text="PATIENT" textFill="#00f6ff">
+                  <MFXButton fx:id="btnPatients" blendMode="SRC_ATOP" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" rippleColor="#aacee1" style="-fx-background-radius: 23px;" text="PATIENT" textFill="#372673">
                      <effect>
                         <GaussianBlur />
                      </effect>
                      <font>
                         <Font name="Sans Serif Collection" size="13.0" />
                      </font></MFXButton>
-                  <MFXButton fx:id="btnPhysios" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" style="-fx-background-radius: 25px;" text="PHYSIO" textFill="#00f6ff">
+                  <MFXButton fx:id="btnPhysios" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" style="-fx-background-radius: 25px;" text="PHYSIO" textFill="#372673">
                      <font>
                         <Font name="Sans Serif Collection" size="13.0" />
                      </font></MFXButton>
-                  <MFXButton fx:id="btnAppointments" buttonType="RAISED" prefHeight="34.0" prefWidth="107.0" style="-fx-background-radius: 25px;" text="APPOINTMENT" textFill="#00f6ff" />
-                  <MFXButton fx:id="btnProfile" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" style="-fx-background-radius: 25px;" text="MY PROFILE" textFill="#00f6ff">
+                  <MFXButton fx:id="btnAppointments" buttonType="RAISED" prefHeight="34.0" prefWidth="107.0" style="-fx-background-radius: 25px;" text="APPOINTMENT" textFill="#372673" />
+                  <MFXButton fx:id="btnProfile" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" style="-fx-background-radius: 25px;" text="MY PROFILE" textFill="#372673">
                      <font>
                         <Font name="Sans Serif Collection" size="13.0" />
                      </font></MFXButton>
-                  <MFXButton fx:id="btnLogout" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" style="-fx-background-radius: 25px;" text="LOGOUT" textFill="#00f6ff">
+                  <MFXButton fx:id="btnLogout" buttonType="RAISED" prefHeight="34.0" prefWidth="94.0" style="-fx-background-radius: 25px;" text="LOGOUT" textFill="#372673">
                      <font>
                         <Font name="Sans Serif Collection" size="13.0" />
                      </font></MFXButton>
@@ -66,7 +66,7 @@
                   <Blend />
                </effect>
             </ImageView>
-            <HBox alignment="CENTER" prefHeight="60.0" prefWidth="847.0" style="-fx-background-color: #88e1f7;">
+            <HBox alignment="CENTER" prefHeight="60.0" prefWidth="847.0" style="-fx-background-color: #6c9286;">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Olex &amp; Hector, © PHYSIO COHMPANY">
                      <font>

@@ -14,7 +14,7 @@
    <children>
       <VBox prefHeight="200.0" prefWidth="578.0">
          <children>
-            <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #88e1f7;">
+            <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #6c9286;">
                <children>
                   <Text fill="WHITE" layoutX="223.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="My profile">
                      <font>
@@ -42,7 +42,7 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </VBox>
-                  <MFXButton fx:id="btnVolver" alignment="CENTER" buttonType="RAISED" depthLevel="LEVEL5" prefHeight="39.0" prefWidth="70.0" rippleColor="WHITE" style="-fx-background-color: #88e1f7; -fx-background-radius: 25px;" text="Back" textFill="WHITE" textOverrun="CLIP">
+                  <MFXButton fx:id="btnVolver" alignment="CENTER" buttonType="RAISED" depthLevel="LEVEL5" prefHeight="39.0" prefWidth="70.0" rippleColor="WHITE" style="-fx-background-color: #6c9286; -fx-background-radius: 25px;" text="Back" textFill="WHITE" textOverrun="CLIP">
                      <HBox.margin>
                         <Insets left="100.0" />
                      </HBox.margin>

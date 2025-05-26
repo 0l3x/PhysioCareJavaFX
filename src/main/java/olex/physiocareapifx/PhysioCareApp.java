@@ -8,7 +8,7 @@ import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;
 
-public class PhysioCareApp extends Application {
+public class  PhysioCareApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(PhysioCareApp.class.getResource("login-view.fxml"));
