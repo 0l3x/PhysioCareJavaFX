@@ -15,6 +15,7 @@ import olex.physiocareapifx.model.Patients.PatientListResponse;
 import olex.physiocareapifx.services.PatientService;
 import olex.physiocareapifx.services.PatientService.Method;
 import olex.physiocareapifx.utils.*;
+import olex.physiocareapifx.utils.pdf.PdfUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -99,6 +100,7 @@ public class PatientController {
                     );
 
                     startSendEmails(response.getResultado());
+                    PdfUtils.crearPDFrecord();
                     //Email.sendPatientsEmails(response.getResultado());
                 } else {
                     MessageUtils.showError("Error", "No se pudo cargar la lista de pacientes");

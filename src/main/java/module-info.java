@@ -16,6 +16,7 @@ module olex.physiocareapifx {
     requires com.google.api.client.extensions.jetty.auth;
     requires jdk.httpserver;
     requires java.dotenv;
+    requires io;
 
     opens olex.physiocareapifx to javafx.fxml;
     opens olex.physiocareapifx.controller to javafx.fxml;

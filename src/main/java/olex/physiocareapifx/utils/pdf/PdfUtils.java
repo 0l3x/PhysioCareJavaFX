@@ -1,6 +1,9 @@
 package olex.physiocareapifx.utils.pdf;
 
+import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -8,8 +11,10 @@ import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.font.FontProvider;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
+import io.github.cdimascio.dotenv.Dotenv;
 import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
 import olex.physiocareapifx.model.Patients.Patient;
@@ -34,28 +39,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class PdfUtils {
-    private static final Paragraph header = new Paragraph("COHMPANY Clinic S.A. - S/ McDonalds, Tenesse")
-            .setFontSize(16)
-            .setItalic()
-            .setTextAlignment(TextAlignment.CENTER)
-            .setMarginBottom(20);
-
-    private static Cell HeaderTop(String text) {
-        return new Cell().add(new Paragraph(text))
-                .setBackgroundColor(ColorConstants.GREEN)
-                .setBold()
-                .setBorder(new SolidBorder(ColorConstants.DARK_GRAY, 1))
-                .setTextAlignment(TextAlignment.LEFT);
-    }
-
-    // para pruebas internas
-    public static void main(String[] args) {
-
-        //crearPDFpatient();
-        //crearPDFrecord();
-        //crearPDFphysio();
-
-    }
+    private static final Dotenv dotenv = Dotenv.configure()
+            .ignoreIfMissing()
+            .load();
 
     // useless
     public static void crearPDFpatient() {
@@ -86,7 +72,7 @@ public class PdfUtils {
     // useless
     public static void crearPDFrecord() {
         System.out.println("Creating PDF de record...");
-        RecordService.getRecordById("67f3fe3996b49b1892b182f0")
+        RecordService.getRecordById("67f3fe3996b49b1892b182dc")
                 .thenAccept(record ->{
                     if(record.isOk()) {
                         System.out.println("PDF created");
@@ -153,36 +139,80 @@ public class PdfUtils {
         }
     }
 
+    private static final Paragraph header = new Paragraph("COHMPANY Clinic S.A. - S/ Lillo Juan, 128 - 03690 Alicante")
+            .setFontSize(14)
+            .setUnderline()
+            .setTextAlignment(TextAlignment.RIGHT)
+            .setMarginBottom(16);
+
+
+    // Header for the tables
+    private static Cell TableHeader(String text) {
+        return new Cell().add(new Paragraph(text))
+                .setBackgroundColor(ColorConstants.CYAN)
+                .setBold()
+                .setBorder(new SolidBorder(ColorConstants.DARK_GRAY, 1))
+                .setTextAlignment(TextAlignment.LEFT);
+    }
+
+    // para pruebas internas
+    public static void main(String[] args) {
+        //crearPDFpatient();
+        //crearPDFrecord();
+        //crearPDFphysio();
+    }
+
+    //TODO:
+    // 1) Crear PDF de record del paciente sin citas (q envie el id correcto)*!
+    // -enviarlo por sftp
+    // 2) Crear PDF de citas del paciente con mas de 8 citas, q notifique que les quedan 2 citas (en sentido de almacenar en el record?),
+    // -enviarlo por email si cumplen con la condicion de tener 8 citas
+    // 3) Crear PDF de salario del fisio, con las citas confirmadas y pendientes del mes, y el total a pagar
+
+
+
     public static void createMedicalRecordPdf(Record record){
         String dest = "resources/records/" + record.getPatient().getInsuranceNumber() + ".pdf";
         Document document;
         try{
             System.out.println("Creating PDF2...");
+
             PdfWriter writer = new PdfWriter(dest);
             PdfDocument pdf = new PdfDocument(writer);
             document = new Document(pdf);
+
             document.add(header);
             Paragraph title = new Paragraph("Medical Record")
-                    .setFontSize(16)
+                    .setFontSize(20)
                     .setBold()
-                    .setTextAlignment(TextAlignment.CENTER)
+                    .setTextAlignment(TextAlignment.LEFT)
                     .setMarginBottom(20);
             document.add(title);
-            float[] colWidths = {2, 4};
+            float[] colWidths = {3, 5};
             Table recordInfo = new Table(UnitValue.createPercentArray(colWidths));
             recordInfo.setWidth(UnitValue.createPercentValue(100));
-            recordInfo.addCell(HeaderTop("Record ID"));
+            recordInfo.addCell(TableHeader("Record ID"));
             recordInfo.addCell(String.valueOf(record.getId()));
-            recordInfo.addCell(HeaderTop("Patient's Insurance Number"));
+            recordInfo.addCell(TableHeader("Patient's Insurance Number"));
             recordInfo.addCell(String.valueOf(record.getPatient().getInsuranceNumber()));
-            recordInfo.addCell(HeaderTop("Patient Name"));
-            recordInfo.addCell(record.getPatient().getFullName());
-            recordInfo.addCell(HeaderTop("Email"));
+            recordInfo.addCell(TableHeader("Name"));
+            recordInfo.addCell(record.getPatient().getName());
+            recordInfo.addCell(TableHeader("Surname"));
+            recordInfo.addCell(record.getPatient().getSurname());
+
+            recordInfo.addCell(TableHeader("Birth Date"));
+            recordInfo.addCell(LocalDate.parse(record.getPatient().getBirthDate(), DateTimeFormatter.ISO_DATE_TIME)
+                    .format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+            recordInfo.addCell(TableHeader("Address"));
+            recordInfo.addCell(record.getPatient().getAddress());
+
+            recordInfo.addCell(TableHeader("Email"));
             recordInfo.addCell(record.getPatient().getEmail());
             document.add(recordInfo);
 
             document.add(new Paragraph("\n"));
-            Paragraph medTitle = new Paragraph("Description:")
+            Paragraph medTitle = new Paragraph("Observations:")
                     .setFontSize(16)
                     .setBold()
                     .setTextAlignment(TextAlignment.LEFT)
@@ -199,9 +229,16 @@ public class PdfUtils {
             System.out.println("Medical Record PDF created successfully.");
 
             File pdfFile = new File(dest);
-//            if (pdfFile.exists()) {
-//                Sftp.savePDF(pdfFile.getAbsolutePath(), pdfFile.getName());
-//            }
+            if (pdfFile.exists()) {
+                SftpUpload.uploadFile(
+                        dotenv.get("SFTP_USERNAME"),
+                        dotenv.get("SFTP_PASSWORD"),
+                        dotenv.get("SFTP_HOST"),
+                        pdfFile.getAbsolutePath(),
+                        dotenv.get("SFTP_PATH") + pdfFile.getName()
+                );
+                System.out.println("PDF uploaded to SFTP server: " + pdfFile.getName());
+            }
             if (pdfFile.exists()) {
                 System.out.println("PDF file exists: " + pdfFile.getAbsolutePath());
             } else {
@@ -251,11 +288,11 @@ public class PdfUtils {
             float[] colWidths = {1, 1, 1, 2, 1};
             Table appointmentsTable = new Table(UnitValue.createPercentArray(colWidths));
             appointmentsTable.setWidth(UnitValue.createPercentValue(100));
-            appointmentsTable.addHeaderCell(HeaderTop("Date"));
-            appointmentsTable.addHeaderCell(HeaderTop("Diagnosis"));
-            appointmentsTable.addHeaderCell(HeaderTop("Treatment"));
-            appointmentsTable.addHeaderCell(HeaderTop("Observations"));
-            appointmentsTable.addHeaderCell(HeaderTop("Physio"));
+            appointmentsTable.addHeaderCell(TableHeader("Date"));
+            appointmentsTable.addHeaderCell(TableHeader("Diagnosis"));
+            appointmentsTable.addHeaderCell(TableHeader("Treatment"));
+            appointmentsTable.addHeaderCell(TableHeader("Observations"));
+            appointmentsTable.addHeaderCell(TableHeader("Physio"));
             //name physio.getFullName()
 
             for (Appointment a: patient.getAppointments()) {
@@ -356,10 +393,10 @@ public class PdfUtils {
                 float[] colWidths = {1, 1, 4, 1};
                 Table appointmentsTable = new Table(UnitValue.createPercentArray(colWidths));
                 appointmentsTable.setWidth(UnitValue.createPercentValue(100));
-                appointmentsTable.addHeaderCell(getHeaderCell("Date"));
-                appointmentsTable.addHeaderCell(getHeaderCell("PatientId"));
-                appointmentsTable.addHeaderCell(getHeaderCell("Treatment"));
-                appointmentsTable.addHeaderCell(getHeaderCell("Price"));
+                appointmentsTable.addHeaderCell(TableHeader("Date"));
+                appointmentsTable.addHeaderCell(TableHeader("PatientId"));
+                appointmentsTable.addHeaderCell(TableHeader("Treatment"));
+                appointmentsTable.addHeaderCell(TableHeader("Price"));
 
                 for (Appointment a: confirmed) {
                     if (Objects.equals(a.getStatus(), "pending") && Objects.equals(a.getStatus(), "completed") ) {
@@ -393,11 +430,5 @@ public class PdfUtils {
         return newPdf;
     }
 
-    private static Cell getHeaderCell(String text) {
-        return new Cell().add(new Paragraph(text))
-                .setBackgroundColor(ColorConstants.CYAN)
-                .setBold()
-                .setBorder(new SolidBorder(ColorConstants.BLUE, 1))
-                .setTextAlignment(TextAlignment.LEFT);
-    }
+
 }
