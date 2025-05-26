@@ -99,7 +99,8 @@ public class PatientController {
                             tableViewPatient.getItems().setAll(response.getResultado())
                     );
 
-                    startSendEmails(response.getResultado());
+                    //startSendEmails(response.getResultado()); // mandar email a hector xd
+
                     //PdfUtils.crearPDFrecord();
                     //Email.sendPatientsEmails(response.getResultado());
                 } else {

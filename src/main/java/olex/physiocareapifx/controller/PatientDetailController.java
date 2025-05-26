@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import olex.physiocareapifx.model.Appointments.Appointment;
 import olex.physiocareapifx.model.BaseResponse;
@@ -19,11 +20,15 @@ import olex.physiocareapifx.model.Patients.PatientResponse;
 import olex.physiocareapifx.model.Records.RecordResponse;
 import olex.physiocareapifx.services.AppointmentService;
 import olex.physiocareapifx.services.PatientService;
+import olex.physiocareapifx.services.RecordService;
 import olex.physiocareapifx.utils.MessageUtils;
 import olex.physiocareapifx.utils.SceneLoader;
 import olex.physiocareapifx.utils.ServiceUtils;
 import olex.physiocareapifx.utils.Utils;
+import olex.physiocareapifx.utils.pdf.PdfUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -33,10 +38,13 @@ import java.util.concurrent.CompletableFuture;
 
 import static olex.physiocareapifx.utils.Utils.userId;
 import static olex.physiocareapifx.utils.Utils.userPhysio;
+import static olex.physiocareapifx.utils.pdf.PdfUtils.createMedicalRecordPdf;
 
 public class PatientDetailController implements Initializable {
     public Button btn_Add;
     public Button btn_back;
+    @FXML
+    public Button btn_download;
     public TextField lbl_name;
     public TextField lbl_surname;
     public TextField lbl_addres;
@@ -58,40 +66,39 @@ public class PatientDetailController implements Initializable {
     @FXML
     public TableColumn<Appointment,String> colStatus;
     public ObservableList<Appointment> appointments = FXCollections.observableArrayList();
-    public Button btn_download;
     public Patient patient;
     public Gson gson = new Gson();
     //// Get Appointments
     /**
      * Get all appointments
      */
-    public void getAppointment(){
-        tableViewAppointment.getItems().clear();
-        String url ="";
-        System.out.println(userId);
-        System.out.println(Utils.isPhysio);
-        url = ServiceUtils.API_URL + "/records/appointments/patients/" + userPhysio;
-        genericalyGetAppointment(url);
-    }
+//    public void getAppointment(){
+//        tableViewAppointment.getItems().clear();
+//        String url ="";
+//        System.out.println(userId);
+//        System.out.println(Utils.isPhysio);
+//        url = ServiceUtils.API_URL + "/records/appointments/patients/" + userPhysio;
+//        genericalyGetAppointment(url);
+//    }
     /**
      * Fucntion generic to get appointments by url
      * @param url url to get appointments
      */
-    public void genericalyGetAppointment(String url){
-        AppointmentService.getAppointments(url)
-                .thenAccept(appointments -> {
-                    Platform.runLater(() -> {
-                        this.appointments.clear();
-                        this.appointments.addAll(appointments);
-                        tableViewAppointment.setItems(this.appointments);
-                    });
-                }).exceptionally(ex -> {
-                    Platform.runLater(() -> {
-                        MessageUtils.showError("Error", "Failed to get appointments");
-                    });
-                    return null;
-                });
-    }
+//    public void genericalyGetAppointment(String url){
+//        AppointmentService.getAppointments(url)
+//                .thenAccept(appointments -> {
+//                    Platform.runLater(() -> {
+//                        this.appointments.clear();
+//                        this.appointments.addAll(appointments);
+//                        tableViewAppointment.setItems(this.appointments);
+//                    });
+//                }).exceptionally(ex -> {
+//                    Platform.runLater(() -> {
+//                        MessageUtils.showError("Error", "Failed to get appointments");
+//                    });
+//                    return null;
+//                });
+//    }
 
 
     @Override
@@ -103,9 +110,62 @@ public class PatientDetailController implements Initializable {
                 MessageUtils.showError("Error", "Failed to load menu");
             }
         });
+
         btn_Add.setOnAction(actionEvent -> {
             updatePatient();
         });
+
+        btn_download.setOnAction(actionEvent -> {
+            // 1) Recupera el insuranceNumber del paciente actual
+            String insurance = lbl_insuranceNumber.getText();
+            if (insurance == null || insurance.isBlank()) {
+                MessageUtils.showError("Error", "No hay número de seguro definido.");
+                return;
+            }
+
+            RecordService.getRecordById(patient.getId())
+                    .thenAccept(record ->{
+                        if(record.isOk()) {
+                            createMedicalRecordPdf(record.getRecord());
+                        }else{
+                            System.out.println("Error: " + record.getError());
+                        }
+                    }).exceptionally(e -> {
+                        System.out.println("Error: " + e.getMessage());
+                        return null;
+                    });
+
+            // 2) Construye la ruta local al PDF
+            File pdfFile = new File("resources/records/" + insurance + ".pdf");
+            if (!pdfFile.exists()) {
+                MessageUtils.showError("Error", "No se puede descargar el PDF para este paciente:\nNo dispone de Record");
+                return;
+            }
+
+            // 3) Configura el DirectoryChooser para que abra en la carpeta del PDF
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            dirChooser.setTitle("Selecciona carpeta donde guardar el PDF");
+            // fijamos la carpeta inicial al parent del PDF
+            dirChooser.setInitialDirectory(pdfFile.getParentFile());
+
+            // 4) Mostramos el diálogo, obtenemos destino
+            File targetDir = dirChooser.showDialog(((Node) actionEvent.getSource()).getScene().getWindow());
+            if (targetDir == null) return;  // usuario canceló
+
+            // 5) Copiamos el PDF desde resources/... a la carpeta elegida
+            File destFile = new File(targetDir, pdfFile.getName());
+            try {
+                java.nio.file.Files.copy(
+                        pdfFile.toPath(),
+                        destFile.toPath(),
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING
+                );
+                MessageUtils.showMessage("Éxito", "PDF guardado en:\n" + destFile.getAbsolutePath());
+            } catch (IOException e) {
+                MessageUtils.showError("Error", "No se pudo copiar el PDF:\n" + e.getMessage());
+            }
+        });
+
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colDiagnosis.setCellValueFactory(new PropertyValueFactory<>("diagnosis"));
         colObservations.setCellValueFactory(new PropertyValueFactory<>("observations"));
@@ -115,8 +175,6 @@ public class PatientDetailController implements Initializable {
        // getAppointment();
         getRecords();
         loadPatient();
-
-
     }
 
     private void getRecords() {
@@ -147,7 +205,6 @@ public class PatientDetailController implements Initializable {
 
 
     }
-
 
     private void loadPatient() {
         new Thread(() -> {
