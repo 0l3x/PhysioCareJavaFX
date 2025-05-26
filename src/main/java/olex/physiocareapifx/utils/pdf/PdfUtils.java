@@ -43,101 +43,6 @@ public class PdfUtils {
             .ignoreIfMissing()
             .load();
 
-    // useless
-    public static void crearPDFpatient() {
-        System.out.println("Creating PDF de patient...");
-        PatientService.getAppointmentsOfPatientById("67f3fe3996b49b1892b182dc")
-                .thenAccept(patient ->{
-                    if(patient != null) {
-                        //System.out.println("Record ID: " + patient.getPatient().getId());
-                        getPatientAppointmentsPdf(patient);
-                        System.out.println("PDF created");
-                        //createMedicalRecordPdf(record.getPatient());
-                    }else{
-                        System.out.println("Error: " + "Patient not found");
-                    }
-                }).exceptionally(e -> {
-                    System.out.println("Error: " + e.getMessage());
-                    return null;
-                });
-        while (true) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // useless
-    public static void crearPDFrecord() {
-        System.out.println("Creating PDF de record...");
-        RecordService.getRecordById("67f3fe3996b49b1892b182dc")
-                .thenAccept(record ->{
-                    if(record.isOk()) {
-                        System.out.println("PDF created");
-                        System.out.println("Record ID: " + record.getRecord().getId());
-                        createMedicalRecordPdf(record.getRecord());
-                    }else{
-                        System.out.println("Error: " + record.getError());
-                    }
-                }).exceptionally(e -> {
-                    System.out.println("Error: " + e.getMessage());
-                    return null;
-                });
-        while (true) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // useless
-    public static void crearPDFphysio() {
-        System.out.println("Creating PDF de physio...");
-        String physioId = "67f3fe3996b49b1892b182e4";
-
-        // 1) Primero recuperamos el objeto Physio
-        PhysioService.getById(physioId)
-                .thenAccept(physioResp -> {
-                    if (physioResp.isOk()) {
-                        Physio physio = physioResp.getPhysio();
-
-                        // 2) Cuando tengamos el physio, pedimos sus citas
-                        AppointmentService.getByPhysioId(physioId)
-                                .thenAccept(appListResp -> {
-                                    // 3) Asignamos la lista de citas al objeto
-                                    physio.setAppointments(appListResp.getAppointments());
-
-                                    // 4) Generamos el PDF
-                                    PdfUtils.createPhysioPdf(physio);
-                                    System.out.println("PDF created for physio: " + physio.getFullName());
-                                })
-                                .exceptionally(e -> {
-                                    System.err.println("Error fetching appointments: " + e.getMessage());
-                                    return null;
-                                });
-
-                    } else {
-                        System.err.println("Error fetching physio: " + physioResp.getError());
-                    }
-                })
-                .exceptionally(e -> {
-                    System.err.println("Error fetching physio: " + e.getMessage());
-                    return null;
-                });
-
-        // Mantenemos la aplicación viva hasta que termine la CompletableFuture
-        while (true) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                break;
-            }
-        }
-    }
 
     private static final Paragraph header = new Paragraph("COHMPANY Clinic S.A. - S/ Lillo Juan, 128 - 03690 Alicante")
             .setFontSize(14)
@@ -155,19 +60,13 @@ public class PdfUtils {
                 .setTextAlignment(TextAlignment.LEFT);
     }
 
-    // para pruebas internas
-    public static void main(String[] args) {
-        //crearPDFpatient();
-        //crearPDFrecord();
-        //crearPDFphysio();
-    }
-
     //TODO:
     // 1) Crear PDF de record del paciente sin citas (q envie el id correcto)*!
-    // -enviarlo por sftp
+    // -enviarlo por sftp (funcionando)
     // 2) Crear PDF de citas del paciente con mas de 8 citas, q notifique que les quedan 2 citas (en sentido de almacenar en el record?),
-    // -enviarlo por email si cumplen con la condicion de tener 8 citas
+    // -enviarlo por email si cumplen con la condicion de tener 8 citas (funcionando)
     // 3) Crear PDF de salario del fisio, con las citas confirmadas y pendientes del mes, y el total a pagar
+    // -enviarlo por email (funcionando)
 
 
 
@@ -297,7 +196,7 @@ public class PdfUtils {
 
             for (Appointment a: patient.getAppointments()) {
                 if (a.getStatus().equals("completed")) {
-                    appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDate().isBlank() ? a.getDate() : "Empty Date")).setFontSize(9));
+                    appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDate().isBlank() ? LocalDate.parse(a.getDate(), DateTimeFormatter.ISO_DATE_TIME).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "Empty Date")).setFontSize(9));
                     appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDiagnosis().isBlank() ? a.getDiagnosis() : "Empty Diagnosis")).setFontSize(9));
                     appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getTreatment().isBlank() ? a.getTreatment() : "Empty Treatment")).setFontSize(9));
                     appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getObservations().isBlank() ? a.getObservations() : "Empty Observations")).setFontSize(9));
@@ -325,7 +224,9 @@ public class PdfUtils {
     public static File createPhysioPdf(Physio physio){
         LocalDate now = LocalDate.now();
         YearMonth currentMonth = YearMonth.from(now);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+
+        //LocalDate.parse(record.getPatient().getBirthDate(), DateTimeFormatter.ISO_DATE_TIME
+        //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
 
         String dest = "resources/physios/" + physio.getLicenseNumber() + "_" + currentMonth + ".pdf";
         File newPdf = null;
@@ -338,32 +239,36 @@ public class PdfUtils {
             document.add(header);
 
             // Title
-            Paragraph title = new Paragraph("- PAYROLL -")
+            Paragraph title = new Paragraph("PAYSHEET")
                     .setFontSize(20)
                     .setBold()
                     .setTextAlignment(TextAlignment.CENTER)
                     .setMarginBottom(20);
             document.add(title);
 
+            System.out.println(now + " - " + currentMonth);
+
             // Count last month confirmed appointments
             List<Appointment> confirmed = physio.getAppointments()
                     .stream()
                     .filter(a -> {
-                        if(Objects.equals(a.getStatus(), "pending") && Objects.equals(a.getStatus(), "completed") && !a.getDate().isBlank()) {
-                            LocalDate appointmentDate = LocalDate.parse(a.getDate(), formatter);
+                        if(Objects.equals(a.getStatus(), "pending") || Objects.equals(a.getStatus(), "completed") && !a.getDate().isBlank()) {
+                            LocalDate appointmentDate = LocalDate.parse(a.getDate(), DateTimeFormatter.ISO_DATE_TIME);
                             YearMonth appointmentYM = YearMonth.from(appointmentDate);
                             return appointmentYM.equals(currentMonth);
                         }
                         return false;
                     }).toList();
 
+            System.out.println("apointments confirmados: " + confirmed);
+
             // Calcular salario total
-            double totalSalary = (confirmed.size() * 100);
+            double totalSalary = (confirmed.size() * 50);
 
             // Crear tabla resumen
-            float[] summaryColWidths = {3, 3};
+            float[] summaryColWidths = {3, 5};
             Table salarySummary = new Table(UnitValue.createPercentArray(summaryColWidths));
-            salarySummary.setWidth(UnitValue.createPercentValue(50));
+            salarySummary.setWidth(UnitValue.createPercentValue(100));
             salarySummary.addCell(new Cell().add(new Paragraph("Physiotherapist")).setFontSize(12).setBold());
             salarySummary.addCell(new Cell().add(new Paragraph(physio.getFullName())).setFontSize(12));
             salarySummary.addCell(new Cell().add(new Paragraph("Month")).setFontSize(12).setBold());
@@ -399,16 +304,17 @@ public class PdfUtils {
                 appointmentsTable.addHeaderCell(TableHeader("Price"));
 
                 for (Appointment a: confirmed) {
-                    if (Objects.equals(a.getStatus(), "pending") && Objects.equals(a.getStatus(), "completed") ) {
-                        appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDate().isBlank() ? a.getDate() : "Empty Date")).setFontSize(9));
+                    if (Objects.equals(a.getStatus(), "pending") || Objects.equals(a.getStatus(), "completed") ) {
+                        appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDate().isBlank() ? LocalDate.parse(a.getDate(), DateTimeFormatter.ISO_DATE_TIME).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "Empty Date")).setFontSize(9));
+                        // TODO: get patientId que funcione
                         appointmentsTable.addCell(new Cell().add(new Paragraph(a.getPatientId())).setFontSize(9));
                         appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getTreatment().isBlank() ? a.getTreatment() : "Empty Treatment")).setFontSize(9));
-                        appointmentsTable.addCell(new Cell().add(new Paragraph("$100").setFontSize(9)));
+                        appointmentsTable.addCell(new Cell().add(new Paragraph("$50").setFontSize(9)));
                     }
                 }
                 document.add(appointmentsTable);
             }else{
-                Paragraph noAppointmentsMessage = new Paragraph("You need work hard!")
+                Paragraph noAppointmentsMessage = new Paragraph("You need to work hard!")
                         .setFontSize(9)
                         .setItalic()
                         .setTextAlignment(TextAlignment.CENTER)

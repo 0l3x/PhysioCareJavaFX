@@ -100,7 +100,7 @@ public class PatientController {
                     );
 
                     startSendEmails(response.getResultado());
-                    PdfUtils.crearPDFrecord();
+                    //PdfUtils.crearPDFrecord();
                     //Email.sendPatientsEmails(response.getResultado());
                 } else {
                     MessageUtils.showError("Error", "No se pudo cargar la lista de pacientes");

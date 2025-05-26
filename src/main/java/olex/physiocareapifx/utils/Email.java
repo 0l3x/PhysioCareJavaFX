@@ -74,7 +74,7 @@ public class Email {
         });
         patients.stream()
                 .filter(p -> p.getAppointments().stream() // Filter patients who have 8 or more completed OR PENDING! appointments
-                        .filter(a-> Objects.equals(a.getStatus(), "completed"))
+                        .filter(a-> Objects.equals(a.getStatus(), "completed") || Objects.equals(a.getStatus(), "pending"))
                         .toList()
                         .size() >= 8
                 ).forEach(Email::sendPatientEmail);
@@ -122,13 +122,59 @@ public class Email {
     }
 
     public static void sendPhysiosEmails(List<Physio> physios){
+//        physios.stream().forEach(p -> { // For each physio, fetch their appointments asynchronously
+//            CompletableFuture<List<Appointment>> future = AppointmentService.getAppointments(ServiceUtils.API_URL  +"/records/appointments/physio/" + p.getId());
+//            while (!future.isDone()) {
+//                try {
+//                    Thread.sleep(100); // Wait for the future to complete
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            future.thenAccept(appointment -> { // Once the appointments are fetched, set them to the physio
+//                if (appointment != null) {
+//                    p.setAppointments(appointment);
+//                }
+//            }).exceptionally(e -> {
+//                System.out.println("Error fetching appointments for physio: " + p.getId());
+//                return null;
+//            });
+//        });
+
         physios.forEach(Email::sendPhysioMail);
     }
 
    public static void sendPhysioMail(Physio physio) {
+       String url = ServiceUtils.API_URL + "/records/appointments/physio/" + physio.getId();
 
+       CompletableFuture<List<Appointment>> future = AppointmentService.getAppointments(url);
+       while (!future.isDone()) {
+           try {
+               Thread.sleep(100); // Wait for the future to complete
+           } catch (InterruptedException e) {
+               System.out.println("Error fetching appointments smh for physio: " + e.getMessage());
+           }
+       }
 
-        try {
+       future.thenAccept(appointments -> {
+           if (appointments != null) {
+
+                physio.setAppointments(appointments);
+
+               } else {
+               System.err.println("No se obtuvieron citas para el fisio: " + physio.getId());
+           }
+       })
+       .exceptionally(e -> {
+           System.err.println("Error al obtener citas de " + physio.getId() + ": " + e.getMessage());
+           return null;
+       });
+
+       System.out.println(" tiene apointments? " + physio.getAppointments().size());
+
+       File dest = PdfUtils.createPhysioPdf(physio);
+
+       try {
 
             final NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
             Gmail service = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY,
@@ -138,7 +184,7 @@ public class Email {
 
             String user = "me";
             System.out.println(physio.getEmail());
-           /* MimeMessage emailContent= createEmailWithAttachment(
+            MimeMessage emailContent= createEmailWithAttachment(
                     physio.getEmail(),
                     SENDER,
                     "COHMPANY Payslip for " + physio.getName(),
@@ -149,19 +195,19 @@ public class Email {
                             "Should you have any questions or require further clarification regarding your payslip, do not hesitate to contact the Payroll Department at  payroll@company.com or call extension 1234.\n\n" +
                             "Thank you for your continued dedication and hard work.\n\n" +
                             "Kind regards,\n\n" ,
-                    dest.getAbsolutePath());*/
-            MimeMessage emailContent= createEmailWithAttachment3(
-                    physio.getEmail(),
-                    SENDER,
-                    "COHMPANY Payslip for " + physio.getName(),
-                    "Dear " + physio.getName() + ",\n\n" +
-                            "I hope you are well.\n\n" +
-                            "Please find attached the payroll statement for the period of "+new Date() +"\n" +
-                            "This document details your gross earnings, deductions (including social security and tax withholdings), and net pay for the specified pay period.\n\n" +
-                            "Should you have any questions or require further clarification regarding your payslip, do not hesitate to contact the Payroll Department at  payroll@company.com or call extension 1234.\n\n" +
-                            "Thank you for your continued dedication and hard work.\n\n" +
-                            "Kind regards,\n\n"
-                   );
+                    dest.getAbsolutePath());
+//            MimeMessage emailContent= createEmailWithAttachment3(
+//                    physio.getEmail(),
+//                    SENDER,
+//                    "COHMPANY Payslip for " + physio.getName(),
+//                    "Dear " + physio.getName() + ",\n\n" +
+//                            "I hope you are well.\n\n" +
+//                            "Please find attached the payroll statement for the period of "+new Date() +"\n" +
+//                            "This document details your gross earnings, deductions (including social security and tax withholdings), and net pay for the specified pay period.\n\n" +
+//                            "Should you have any questions or require further clarification regarding your payslip, do not hesitate to contact the Payroll Department at  payroll@company.com or call extension 1234.\n\n" +
+//                            "Thank you for your continued dedication and hard work.\n\n" +
+//                            "Kind regards,\n\n"
+//                   );
 
             sendMessage(service, user, emailContent);
         } catch (Exception e) {

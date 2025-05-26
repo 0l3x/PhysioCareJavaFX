@@ -88,6 +88,7 @@ public class Physio {
 
     public List<Appointment> getAppointments() {
         if(appointments == null) {
+            System.out.println("appointments is null");
             return new ArrayList<>();
         }else{
             return appointments;
