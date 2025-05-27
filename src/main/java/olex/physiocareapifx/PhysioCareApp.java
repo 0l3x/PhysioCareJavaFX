@@ -14,7 +14,6 @@ public class  PhysioCareApp extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(PhysioCareApp.class.getResource("login-view.fxml"));
         stage.initStyle(StageStyle.UNDECORATED);
-
         Scene scene = new Scene(fxmlLoader.load());
         scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
         stage.setTitle("Physiocare management");

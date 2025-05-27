@@ -14,17 +14,21 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<SplitPane dividerPositions="0.30110434978589135" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="603.0" prefWidth="889.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.PhysioDetailController">
+<SplitPane dividerPositions="0.30448501239576287" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="603.0" prefWidth="889.0" style="-fx-background-color: #bbd1c4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.PhysioDetailController">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="185.0">
          <children>
-            <VBox prefHeight="478.0" prefWidth="246.0">
+            <HBox alignment="CENTER" prefHeight="66.0" prefWidth="267.0" style="-fx-background-color: #6c9286;">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Physio" textAlignment="CENTER" wrappingWidth="245.33672714233398">
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Physio" textAlignment="CENTER" wrappingWidth="263.73669052124023">
                      <font>
                         <Font size="28.0" />
                      </font>
                   </Text>
+               </children>
+            </HBox>
+            <VBox layoutY="60.0" prefHeight="418.0" prefWidth="267.0">
+               <children>
                   <VBox prefHeight="441.0" prefWidth="246.0">
                      <children>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">

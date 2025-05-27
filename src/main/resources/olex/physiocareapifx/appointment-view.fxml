@@ -12,27 +12,31 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="593.0" prefWidth="879.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.AppointmentController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="622.0" prefWidth="881.0" style="-fx-background-color: #bbd1c4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.AppointmentController">
    <children>
       <VBox prefHeight="593.0" prefWidth="879.0">
          <children>
-            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="702.0" spacing="100.0" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER" prefHeight="146.0" prefWidth="879.0" spacing="100.0" style="-fx-background-color: #6c9286;" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="exitBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="74.0" text="&lt; Exit">
+                  <Button fx:id="exitBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="74.0" style="-fx-background-color: #bbd1c4;" text="&lt; Exit" textFill="WHITE">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></Button>
-                  <Label prefHeight="18.0" prefWidth="100.0" text="Appointments">
+                  <Label prefHeight="26.0" prefWidth="130.0" text="Appointments" textFill="WHITE">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
+                     <font>
+                        <Font size="17.0" />
+                     </font>
                   </Label>
                   <HBox alignment="CENTER" prefHeight="26.0" prefWidth="363.0" spacing="20.0">
                      <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Filter: " />
-                        <MFXLegacyComboBox fx:id="cmbFilter" blendMode="MULTIPLY" cache="true" cacheHint="SPEED" depthTest="ENABLE" lineColor="#0869f2" prefHeight="23.0" prefWidth="97.0" />
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Filter: " />
+                        <MFXLegacyComboBox fx:id="cmbFilter" blendMode="MULTIPLY" cache="true" cacheHint="SPEED" depthTest="ENABLE" lineColor="#d2d7df" prefHeight="23.0" prefWidth="97.0" unfocusedLineColor="WHITE" />
                      </children>
                   </HBox>
                </children>
@@ -104,12 +108,6 @@
                </VBox.margin>
             </VBox>
          </children>
-         <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </padding>
       </VBox>
    </children>
-   <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-   </padding>
 </Pane>

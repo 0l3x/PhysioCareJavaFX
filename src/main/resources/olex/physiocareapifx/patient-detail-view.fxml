@@ -8,37 +8,47 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<SplitPane dividerPositions="0.3394648829431438" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="847.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.PatientDetailController">
+<SplitPane dividerPositions="0.3394648829431438" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="847.0" style="-fx-background-color: #bbd1c4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="olex.physiocareapifx.controller.PatientDetailController">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
-            <Button fx:id="btn_Add" layoutX="73.0" layoutY="351.0" mnemonicParsing="false" text="Add" />
-            <Button fx:id="btn_back" layoutX="142.0" layoutY="351.0" mnemonicParsing="false" text="Back" />
-            <Label layoutX="60.0" layoutY="60.0" text="Name" />
-            <Label layoutX="50.0" layoutY="96.0" text="Surname" />
-            <Label layoutX="36.0" layoutY="138.0" text="Birthdate" />
-            <Label layoutX="10.0" layoutY="260.0" text="InsuranseNumber" />
-            <Label layoutX="71.0" layoutY="223.0" text="Email" />
-            <Label layoutX="57.0" layoutY="180.0" text="Addres" />
-            <TextField fx:id="lbl_name" layoutX="110.0" layoutY="56.0" />
-            <TextField fx:id="lbl_surname" layoutX="110.0" layoutY="92.0" />
-            <TextField fx:id="lbl_addres" layoutX="110.0" layoutY="176.0" />
-            <TextField fx:id="lbl_email" layoutX="110.0" layoutY="219.0" />
-            <TextField fx:id="lbl_insuranceNumber" layoutX="110.0" layoutY="256.0" />
-            <DatePicker fx:id="lbl_date" layoutX="110.0" layoutY="134.0" prefHeight="25.0" prefWidth="160.0" />
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="284.0" style="-fx-background-color: #6c9286;">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="PATIENT">
+                     <font>
+                        <Font size="27.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+            <Button fx:id="btn_Add" layoutX="63.0" layoutY="456.0" mnemonicParsing="false" text="Add" />
+            <Button fx:id="btn_back" layoutX="132.0" layoutY="456.0" mnemonicParsing="false" text="Back" />
+            <Label layoutX="50.0" layoutY="165.0" text="Name" />
+            <Label layoutX="40.0" layoutY="201.0" text="Surname" />
+            <Label layoutX="26.0" layoutY="243.0" text="Birthdate" />
+            <Label layoutY="365.0" text="InsuranseNumber" />
+            <Label layoutX="61.0" layoutY="328.0" text="Email" />
+            <Label layoutX="47.0" layoutY="285.0" text="Addres" />
+            <TextField fx:id="lbl_name" layoutX="100.0" layoutY="161.0" />
+            <TextField fx:id="lbl_surname" layoutX="100.0" layoutY="197.0" />
+            <TextField fx:id="lbl_addres" layoutX="100.0" layoutY="281.0" />
+            <TextField fx:id="lbl_email" layoutX="100.0" layoutY="324.0" />
+            <TextField fx:id="lbl_insuranceNumber" layoutX="100.0" layoutY="361.0" />
+            <DatePicker fx:id="lbl_date" layoutX="100.0" layoutY="239.0" prefHeight="25.0" prefWidth="160.0" />
 
          </children></AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="449.0" prefWidth="470.0">
          <children>
-            <Text layoutX="184.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Record" wrappingWidth="121.265625">
+            <Text fill="WHITE" layoutX="184.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Record" wrappingWidth="121.265625">
                <font>
                   <Font size="32.0" />
                </font>
             </Text>
-            <Text layoutX="54.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Medical Record" wrappingWidth="403.13671875" />
+            <Text fill="WHITE" layoutX="54.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Medical Record" wrappingWidth="403.13671875" />
             <TableView fx:id="tableViewAppointment" layoutX="26.0" layoutY="159.0" prefHeight="333.0" prefWidth="507.0">
                <columns>
                   <TableColumn fx:id="colDate" prefWidth="81.59997862577438" text="Date" />
@@ -49,8 +59,8 @@
                   <TableColumn fx:id="colStatus" prefWidth="203.199951171875" text="Status" />
                </columns>
             </TableView>
-            <Text layoutX="26.0" layoutY="148.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Appointments" wrappingWidth="403.13671875" />
-            <Button fx:id="btn_download" layoutX="360.0" layoutY="32.0" mnemonicParsing="false" text="Download record" />
+            <Text fill="WHITE" layoutX="26.0" layoutY="148.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Appointments" wrappingWidth="403.13671875" />
+            <Button fx:id="btn_download" layoutX="360.0" layoutY="32.0" mnemonicParsing="false" style="-fx-background-color: #6c9286;" text="Download record" textFill="WHITE" />
             <TextField fx:id="lbl_medical" layoutX="35.0" layoutY="110.0" prefHeight="25.0" prefWidth="493.0" />
          </children></AnchorPane>
   </items>
