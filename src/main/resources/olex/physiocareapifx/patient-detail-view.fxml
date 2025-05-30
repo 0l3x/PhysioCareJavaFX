@@ -30,7 +30,7 @@
             <Label layoutX="50.0" layoutY="165.0" text="Name" />
             <Label layoutX="40.0" layoutY="201.0" text="Surname" />
             <Label layoutX="26.0" layoutY="243.0" text="Birthdate" />
-            <Label layoutY="365.0" text="InsuranseNumber" />
+            <Label layoutY="365.0" text="InsuranceNumber" />
             <Label layoutX="61.0" layoutY="328.0" text="Email" />
             <Label layoutX="47.0" layoutY="285.0" text="Addres" />
             <TextField fx:id="lbl_name" layoutX="100.0" layoutY="161.0" />

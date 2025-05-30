@@ -70,7 +70,7 @@
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                            <children>
                               <Button fx:id="btnEdit" mnemonicParsing="false" text="Edit" />
-                              <Button fx:id="btn_paylish" mnemonicParsing="false" text="Paylish" />
+                              <Button fx:id="btn_paylish" mnemonicParsing="false" text="Paylist" />
                               <Button fx:id="btnBack" mnemonicParsing="false" text="Back" />
                            </children>
                         </HBox>

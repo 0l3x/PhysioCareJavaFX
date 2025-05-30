@@ -75,7 +75,7 @@ public class Email {
         System.out.println("Sending emails to patients who have reached the limit of available appointments...");
         patients.stream()
                 .filter(p -> p.getAppointments().stream() // Filter patients who have 8 or more completed OR PENDING! appointments
-                        .filter(a-> Objects.equals(a.getStatus(), "completed") || Objects.equals(a.getStatus(), "pending"))
+                        .filter(a-> Objects.equals(a.getStatus(), "completed"))
                         .toList()
                         .size() >= 8
                 ).forEach(Email::sendPatientEmail);
@@ -107,7 +107,7 @@ public class Email {
                     SENDER,
                     "Cohmpany Notice",
                     "Dear "+ patient.getName() + ",\n\n" +
-                            "You have two appointments left in total:"+patient.getAppointments().size()+".\n" +
+                            "You have two appointments left in total: " +patient.getAppointments().size()+ ".\n" +
                             "You will not be able to schedule any more.\n" +
                             "Please contact support if you have any questions.\n\n" +
                             "Best regards,\n" +
@@ -122,30 +122,7 @@ public class Email {
         }
     }
 
-    public static void sendPhysiosEmails(List<Physio> physios){
-//        physios.stream().forEach(p -> { // For each physio, fetch their appointments asynchronously
-//            CompletableFuture<List<Appointment>> future = AppointmentService.getAppointments(ServiceUtils.API_URL  +"/records/appointments/physio/" + p.getId());
-//            while (!future.isDone()) {
-//                try {
-//                    Thread.sleep(100); // Wait for the future to complete
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            future.thenAccept(appointment -> { // Once the appointments are fetched, set them to the physio
-//                if (appointment != null) {
-//                    p.setAppointments(appointment);
-//                }
-//            }).exceptionally(e -> {
-//                System.out.println("Error fetching appointments for physio: " + p.getId());
-//                return null;
-//            });
-//        });
-
-        physios.forEach(Email::sendPhysioMail);
-    }
-
-   public static void sendPhysioMail(Physio physio) {
+    public static void sendPhysioMail(Physio physio) {
        String url = ServiceUtils.API_URL + "/records/appointments/physio/" + physio.getId();
 
        CompletableFuture<List<Appointment>> future = AppointmentService.getAppointments(url);
@@ -188,7 +165,7 @@ public class Email {
             MimeMessage emailContent= createEmailWithAttachment(
                     physio.getEmail(),
                     SENDER,
-                    "COHMPANY Payslip for " + physio.getName(),
+                    "COHMPANY Paylist for " + physio.getName(),
                     "Dear " + physio.getName() + ",\n\n" +
                             "I hope you are well.\n\n" +
                             "Please find attached the payroll statement for the period of May 1, 2025 – May 15, 2025. " +

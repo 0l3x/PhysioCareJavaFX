@@ -1,9 +1,6 @@
 package olex.physiocareapifx.utils.pdf;
 
-import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.colors.ColorConstants;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -11,20 +8,14 @@ import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.font.FontProvider;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import io.github.cdimascio.dotenv.Dotenv;
 import olex.physiocareapifx.model.Appointments.Appointment;
-import olex.physiocareapifx.model.Appointments.AppointmentListResponse;
 import olex.physiocareapifx.model.Patients.Patient;
 import olex.physiocareapifx.model.Physios.Physio;
-import olex.physiocareapifx.model.Physios.PhysioResponse;
 import olex.physiocareapifx.model.Records.Record;
-import olex.physiocareapifx.services.AppointmentService;
-import olex.physiocareapifx.services.PatientService;
-import olex.physiocareapifx.services.PhysioService;
-import olex.physiocareapifx.services.RecordService;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,9 +24,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class PdfUtils {
@@ -59,15 +48,6 @@ public class PdfUtils {
                 .setBorder(new SolidBorder(ColorConstants.DARK_GRAY, 1))
                 .setTextAlignment(TextAlignment.LEFT);
     }
-
-    //TODO:
-    // 1) Crear PDF de record del paciente sin citas (q envie el id correcto)*!
-    // -enviarlo por sftp (funcionando)
-    // 2) Crear PDF de citas del paciente con mas de 8 citas, q notifique que les quedan 2 citas (en sentido de almacenar en el record?),
-    // -enviarlo por email si cumplen con la condicion de tener 8 citas (funcionando)
-    // 3) Crear PDF de salario del fisio, con las citas confirmadas y pendientes del mes, y el total a pagar
-    // -enviarlo por email (funcionando)
-
 
 
     public static void createMedicalRecordPdf(Record record){
@@ -174,9 +154,9 @@ public class PdfUtils {
                     .setMarginBottom(20);
             document.add(title);
 
-            int appointmentsCount = Math.max(10 - patient.getAppointments().size(), 0);
+            int appointmentsCount = Math.max(10 - patient.getAppointments().size(), 2);
             // Available Appointments
-            Paragraph availableAppointments = new Paragraph("Available Appointments: " + appointmentsCount)
+            Paragraph availableAppointments = new Paragraph("Appointments Left to Store: " + appointmentsCount)
                     .setFontSize(14)
                     .setItalic()
                     .setTextAlignment(TextAlignment.CENTER)
@@ -304,11 +284,10 @@ public class PdfUtils {
                 appointmentsTable.addHeaderCell(TableHeader("Price"));
 
                 for (Appointment a: confirmed) {
-                    if (Objects.equals(a.getStatus(), "pending") || Objects.equals(a.getStatus(), "completed") ) {
+                    if (Objects.equals(a.getStatus(), "completed") ) {
                         appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getDate().isBlank() ? LocalDate.parse(a.getDate(), DateTimeFormatter.ISO_DATE_TIME).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "Empty Date")).setFontSize(9));
-                        // TODO: get patientId que funcione
-                        appointmentsTable.addCell(new Cell().add(new Paragraph(a.getPatientId())).setFontSize(9));
-                        appointmentsTable.addCell(new Cell().add(new Paragraph(!a.getTreatment().isBlank() ? a.getTreatment() : "Empty Treatment")).setFontSize(9));
+                        appointmentsTable.addCell(new Cell().add(new Paragraph((!(a.getPatientId() == null) && !a.getPatientId().isBlank()) ? a.getPatientId() : "Empty Patient")).setFontSize(9));
+                        appointmentsTable.addCell(new Cell().add(new Paragraph((!(a.getTreatment() == null) && !a.getTreatment().isBlank()) ? a.getTreatment() : "Empty Treatment")).setFontSize(9));
                         appointmentsTable.addCell(new Cell().add(new Paragraph("$50").setFontSize(9)));
                     }
                 }
