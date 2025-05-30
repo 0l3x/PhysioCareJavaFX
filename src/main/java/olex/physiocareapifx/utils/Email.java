@@ -72,6 +72,7 @@ public class Email {
                 return null;
             });
         });
+        System.out.println("Sending emails to patients who have reached the limit of available appointments...");
         patients.stream()
                 .filter(p -> p.getAppointments().stream() // Filter patients who have 8 or more completed OR PENDING! appointments
                         .filter(a-> Objects.equals(a.getStatus(), "completed") || Objects.equals(a.getStatus(), "pending"))

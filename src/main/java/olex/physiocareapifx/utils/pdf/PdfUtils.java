@@ -252,7 +252,7 @@ public class PdfUtils {
             List<Appointment> confirmed = physio.getAppointments()
                     .stream()
                     .filter(a -> {
-                        if(Objects.equals(a.getStatus(), "pending") || Objects.equals(a.getStatus(), "completed") && !a.getDate().isBlank()) {
+                        if(Objects.equals(a.getStatus(), "completed") && !a.getDate().isBlank()) {
                             LocalDate appointmentDate = LocalDate.parse(a.getDate(), DateTimeFormatter.ISO_DATE_TIME);
                             YearMonth appointmentYM = YearMonth.from(appointmentDate);
                             return appointmentYM.equals(currentMonth);
